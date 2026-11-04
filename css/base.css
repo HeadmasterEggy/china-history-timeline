@@ -2,12 +2,14 @@
 *{box-sizing:border-box}
 html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 /* 纸面：底色上叠一层极淡的纤维噪点和顶部朱砂色光晕 */
-body{margin:0;color:var(--ink);font:15px/1.7 var(--f-sans);-webkit-font-smoothing:antialiased;
+body{margin:0;color:var(--ink);font:16px/1.75 var(--f-text);-webkit-font-smoothing:antialiased;
   background-color:var(--paper);
   background-image:
     radial-gradient(1200px 500px at 70% -200px,color-mix(in srgb,var(--seal) 9%,transparent),transparent 70%),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .4 0 0 0 0 .3 0 0 0 0 .2 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-attachment:fixed}
+/* 年份、刻度等小号数字用无衬线体，楷体在小字号下不够清晰 */
+.tick,.blk small,.sb-years,.mini-cap,.mini i,.row .yr,.row .dur,ol.events time,.pi-list small,.m-year,.ec-year,.d-years,.fact span,.hint,.search small,.map-src,footer{font-family:var(--f-sans)}
 ::selection{background:color-mix(in srgb,var(--seal) 28%,transparent)}
 .wrap{max-width:1440px;margin:0 auto;
   padding-left:max(clamp(16px,2.5vw,40px),env(safe-area-inset-left,0px));padding-right:max(clamp(16px,2.5vw,40px),env(safe-area-inset-right,0px))}

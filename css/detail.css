@@ -28,7 +28,7 @@ dl.kv dd{margin:0}
 .nav button:not(:disabled):hover{border-color:var(--c)}
 .nav button:last-child{text-align:right}
 .nav button:disabled{opacity:.4;cursor:default}
-.ev-title{font:600 13px/1 var(--f-sans);letter-spacing:.14em;color:var(--muted);margin-bottom:12px}
+.ev-title{font:700 14px/1 var(--f-serif);letter-spacing:.16em;color:var(--muted);margin-bottom:12px}
 ol.events{list-style:none;margin:0;padding:0;position:relative}
 ol.events::before{content:"";position:absolute;left:84px;top:8px;bottom:8px;border-left:1px solid var(--line)}
 ol.events li{display:grid;grid-template-columns:76px 1fr;gap:26px;padding:7px 0;position:relative}

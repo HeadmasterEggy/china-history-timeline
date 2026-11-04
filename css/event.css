@@ -19,7 +19,7 @@
 .ec-year { margin-left: 8px; color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
 .ec-head h3 { font: 900 30px/1.25 var(--f-serif); margin-top: 8px; }
 .ec-sub { margin: 4px 0 0; color: var(--muted); }
-.ec h4 { font: 600 13px/1 var(--f-sans); letter-spacing: .14em; color: var(--muted); margin: 22px 0 10px; }
+.ec h4 { font: 700 14px/1 var(--f-serif); letter-spacing: .16em; color: var(--muted); margin: 22px 0 10px; }
 .ec-bg { margin: 18px 0 0; }
 .ec-bg b { font-weight: 700; color: var(--c); margin-right: 8px; }
 .ec-steps { list-style: none; margin: 0; padding: 0; border-left: 2px solid color-mix(in srgb, var(--c) 40%, var(--line)); }
