@@ -5,6 +5,7 @@ import { DYNASTIES } from '../../data/dynasties.js';
 import { DETAILS } from '../../data/details.js';
 import { PINS } from '../../data/milestones.js';
 import { UNITY, UNITY_TYPES } from '../../data/unity.js';
+import { IDIOMS } from '../../data/idioms.js';
 import { drawStart } from './format.js';
 
 function mergeDetails(list) {
@@ -16,6 +17,7 @@ function mergeDetails(list) {
       if (more.p) d.p.push(...more.p.filter((x) => !d.p.includes(x)));
       for (const key of ['kings', 'last', 'ach', 'fall']) if (more[key]) d[key] = more[key];
     }
+    if (IDIOMS[d.id]) d.idioms = IDIOMS[d.id];
     d.ev.sort((a, b) => a[0] - b[0]);
     return d;
   });
@@ -59,7 +61,7 @@ export const model = {
     return new Set(
       dynasties
         .filter((d) =>
-          [d.n, d.f, d.c, d.sum, d.fall ?? '', ...d.p, ...(d.ach ?? []), ...d.ev.map((x) => x[1])]
+          [d.n, d.f, d.c, d.sum, d.fall ?? '', ...d.p, ...(d.ach ?? []), ...d.ev.map((x) => x[1]), ...(d.idioms ?? []).flat()]
             .join(' ')
             .includes(q),
         )

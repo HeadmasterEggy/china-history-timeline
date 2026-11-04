@@ -191,6 +191,7 @@ export function createTerritoryMap(root, model, store) {
       svg.innerHTML = `<defs>${patterns()}</defs><rect class="sea" width="100%" height="100%"/>
         <path class="land" d="${data.base}"/><g class="frame"></g>`;
       slider.max = frames.length - 1;
+      root.querySelector('#map-count').textContent = ` ${data.frames.length} `;
       dots.innerHTML = frames
         .map((f, i) => `<button data-i="${i}" style="--c:${colorOf(f.focus)}" title="${f.modern ? '1912年以后' : formatYear(f.year)} ${f.title}" aria-label="${f.title}"></button>`)
         .join('');

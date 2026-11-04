@@ -7,6 +7,7 @@ import { DETAILS } from '../data/details.js';
 import { PINS } from '../data/milestones.js';
 import { ERAS } from '../data/eras.js';
 import { UNITY } from '../data/unity.js';
+import { IDIOMS } from '../data/idioms.js';
 
 const errors = [];
 const ids = new Set(DYNASTIES.map((d) => d.id));
@@ -26,6 +27,7 @@ for (const [k, more] of Object.entries(DETAILS))
     const d = DYNASTIES.find((x) => x.id === k);
     if (d && (y < d.s - 5 || y > d.e + 5)) errors.push(`${d.n}：补充事件年份超出范围 ${y} ${t}`);
   }
+for (const k of Object.keys(IDIOMS)) if (!ids.has(k)) errors.push(`idioms.js：未知朝代 ${k}`);
 for (const [, name, id] of PINS) if (!ids.has(id)) errors.push(`milestones.js：${name} 指向未知朝代 ${id}`);
 
 for (const a of DYNASTIES)

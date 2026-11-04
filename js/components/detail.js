@@ -37,12 +37,18 @@ function eventsColumn(d) {
     </div>`;
 }
 
+function idiomsBlock(d) {
+  if (!d.idioms) return '';
+  return `<div><div class="ev-title">成语典故</div><dl class="idioms">${list(d.idioms, ([w, t]) => `<dt>${w}</dt><dd>${t}</dd>`)}</dl></div>`;
+}
+
 function moreColumn(d) {
-  if (!d.ach && !d.fall) return '';
+  if (!d.ach && !d.fall && !d.idioms) return '';
   return `
     <div class="d-more">
       ${d.ach ? `<div><div class="ev-title">制度 · 经济 · 文化</div><ul class="ach">${list(d.ach, (x) => `<li>${x}</li>`)}</ul></div>` : ''}
       ${d.fall ? `<div><div class="ev-title">${d.open ? '发展' : '衰亡原因'}</div><p class="fall">${d.fall}</p></div>` : ''}
+      ${idiomsBlock(d)}
     </div>`;
 }
 

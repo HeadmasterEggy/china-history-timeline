@@ -37,3 +37,9 @@ ol.events time{text-align:right;color:var(--muted);font-variant-numeric:tabular-
 @media (max-width: 760px) {
   .detail { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* 成语典故 */
+dl.idioms { margin: 0; display: grid; gap: 4px 0; }
+dl.idioms dt { font: 600 16px/1.4 var(--f-serif); color: var(--c); margin-top: 8px; }
+dl.idioms dt:first-child { margin-top: 0; }
+dl.idioms dd { margin: 0; font-size: 14px; color: var(--muted); }
