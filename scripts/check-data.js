@@ -30,6 +30,17 @@ for (const [k, more] of Object.entries(DETAILS))
     const d = DYNASTIES.find((x) => x.id === k);
     if (d && (y < d.s - 5 || y > d.e + 5)) errors.push(`${d.n}：补充事件年份超出范围 ${y} ${t}`);
   }
+// 分期须按年份递增且落在朝代起止范围内；专题条目须有标题和 [名称, 说明] 列表
+for (const [k, more] of Object.entries(DETAILS)) {
+  const d = DYNASTIES.find((x) => x.id === k);
+  if (!d) continue;
+  (more.phases ?? []).forEach(([y, t], i, arr) => {
+    if (y < start(d) - 10 || y > d.e) errors.push(`${d.n}：分期「${t}」年份超出范围`);
+    if (i && y <= arr[i - 1][0]) errors.push(`${d.n}：分期「${t}」未按年份递增`);
+  });
+  for (const s of more.sections ?? [])
+    if (!s.title || !s.items?.length || s.items.some((it) => it.length !== 2)) errors.push(`${d.n}：专题「${s.title ?? '?'}」格式错误`);
+}
 const listed = new Set(DYNASTIES.flatMap((d) => d.p).concat(Object.values(DETAILS).flatMap((m) => m.p ?? [])));
 for (const name of listed) if (!PEOPLE[ALIASES[name] ?? name]) errors.push(`people.js：缺少「${name}」的简介`);
 for (const name of Object.keys(PEOPLE)) if (![...listed].some((n) => (ALIASES[n] ?? n) === name)) errors.push(`people.js：「${name}」未出现在任何朝代`);
