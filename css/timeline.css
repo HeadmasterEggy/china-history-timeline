@@ -57,3 +57,4 @@
 .unity-key { display: inline-flex; gap: 12px; flex-wrap: wrap; margin-left: 12px; }
 .unity-key span { display: inline-flex; align-items: center; gap: 5px; }
 .unity-key i { width: 18px; height: 10px; border-radius: 2px; border: 1px solid var(--line); }
+.pin.dot { padding: 0; }

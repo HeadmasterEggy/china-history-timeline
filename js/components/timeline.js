@@ -3,13 +3,17 @@
 import { formatSpan, formatTick, formatYear, eraColor, drawStart } from '../core/format.js';
 
 const PAD = 24;
-const PINS_H = 56;     // 顶部大事件区高度
+const PIN_ROWS = 3;
+const PINS_H = 24 + PIN_ROWS * 20 + 2;  // 顶部大事件区高度
 const UNITY_H = 22;    // 分合色带高度
 const AXIS_H = 26;
 const TICK_STEPS = [10, 20, 25, 50, 100, 200, 250, 500, 1000];
 
-// 缩放滑块 0–100 对数映射到 0.25–10 像素/年
-const sliderToPpy = (v) => 0.25 * Math.pow(40, v / 100);
+// 缩放滑块 0–100 对数映射到 0.25–20 像素/年
+const MIN_PPY = 0.25;
+const ZOOM_SPAN = 80;
+const sliderToPpy = (v) => MIN_PPY * Math.pow(ZOOM_SPAN, v / 100);
+const ppyToSlider = (p) => (100 * Math.log(p / MIN_PPY)) / Math.log(ZOOM_SPAN);
 
 export function createTimeline({ scrollEl, zoomInput, zoomIn, zoomOut }, model, store) {
   const canvas = scrollEl.querySelector('.canvas');
@@ -41,17 +45,20 @@ export function createTimeline({ scrollEl, zoomInput, zoomIn, zoomOut }, model, 
   }
 
   function pinsHTML() {
-    // 两行交错排布，避免标签重叠
-    const rowEnd = [-Infinity, -Infinity];
+    // 多行交错排布；放不下的标记只显示圆点，悬停可看名称
+    const rowEnd = Array(PIN_ROWS).fill(-Infinity);
     return model.milestones
       .map(([year, text, id]) => {
         const px = x(year);
         const width = text.length * 12 + 16;
-        let row = px > rowEnd[0] + 6 ? 0 : px > rowEnd[1] + 6 ? 1 : rowEnd[0] < rowEnd[1] ? 0 : 1;
-        rowEnd[row] = px + width;
-        const top = 24 + row * 22;
+        const row = rowEnd.findIndex((end) => px > end + 6);
+        const fits = row >= 0;
+        const r = fits ? row : PIN_ROWS - 1;
+        if (fits) rowEnd[r] = px + width;
+        const top = 24 + r * 20;
         return `<div class="pinline" style="left:${px}px;top:${top + 10}px;height:${PINS_H + 8 - top - 10}px"></div>
-          <button class="pin" data-id="${id}" style="left:${px}px;top:${top}px" title="${formatYear(year)} ${text}">${text}</button>`;
+          <button class="pin${fits ? '' : ' dot'}" data-id="${id}" style="left:${px}px;top:${top}px"
+            title="${formatYear(year)} ${text}" aria-label="${formatYear(year)} ${text}">${fits ? text : ''}</button>`;
       })
       .join('');
   }
@@ -61,11 +68,12 @@ export function createTimeline({ scrollEl, zoomInput, zoomIn, zoomOut }, model, 
       .map((d) => {
         const left = x(drawStart(d));
         const width = Math.max(3, x(d.e) - left);
-        const cls = ['blk', d.major && 'major', width < d.n.length * 16 + 14 && 'tiny', width < 120 && 'narrow']
-          .filter(Boolean)
-          .join(' ');
+        // 名称放不下时改用简称（如"苏维埃"），仍放不下则只显示色块
+        const fits = (name) => width >= name.length * 16 + 14;
+        const name = fits(d.n) ? d.n : d.short && fits(d.short) ? d.short : null;
+        const cls = ['blk', d.major && 'major', !name && 'tiny', width < 120 && 'narrow'].filter(Boolean).join(' ');
         return `<button class="${cls}" data-id="${d.id}" style="--c:${eraColor(d.era)};left:${left}px;width:${width}px;top:${laneTop(d.lane) + 4}px"
-          title="${d.n}  ${formatSpan(d)}" aria-label="${d.n}，${formatSpan(d)}"><b>${d.n}</b><small>${formatSpan(d)}</small></button>`;
+          title="${d.n}  ${formatSpan(d)}" aria-label="${d.n}，${formatSpan(d)}"><b>${name ?? d.n}</b><small>${formatSpan(d)}</small></button>`;
       })
       .join('');
   }
@@ -106,6 +114,15 @@ export function createTimeline({ scrollEl, zoomInput, zoomIn, zoomOut }, model, 
   const notifyView = () => viewListeners.forEach((fn) => fn());
   function scrollToYear(year, smooth = true) {
     scrollEl.scrollTo({ left: x(year) - scrollEl.clientWidth / 2, behavior: smooth ? 'smooth' : 'auto' });
+  }
+  /** 缩放到刚好容纳 [s, e] 年份范围，并滚动到该范围 */
+  function fit(s, e) {
+    const target = (scrollEl.clientWidth * 0.92) / (e - s);
+    const v = Math.max(0, Math.min(100, ppyToSlider(target)));
+    zoomInput.value = v;
+    ppy = sliderToPpy(v);
+    render();
+    scrollEl.scrollLeft = x(s) - scrollEl.clientWidth * 0.04;
   }
   function centerOn(d) {
     scrollToYear((drawStart(d) + d.e) / 2);
@@ -179,6 +196,7 @@ export function createTimeline({ scrollEl, zoomInput, zoomIn, zoomOut }, model, 
     scrollEl,
     x,
     scrollToYear,
+    fit,
     contentWidth: () => canvas.offsetWidth,
     onViewChange: (fn) => viewListeners.push(fn),
   };

@@ -16,7 +16,7 @@ function mergeDetails(list) {
     if (more) {
       if (more.ev) d.ev.push(...more.ev);
       if (more.p) d.p.push(...more.p.filter((x) => !d.p.includes(x)));
-      for (const key of ['kings', 'last', 'ach', 'fall']) if (more[key]) d[key] = more[key];
+      for (const key of ['kings', 'last', 'ach', 'fall', 'phases', 'sections']) if (more[key]) d[key] = more[key];
     }
     if (IDIOMS[d.id]) d.idioms = IDIOMS[d.id];
     d.ev.sort((a, b) => a[0] - b[0]);
@@ -45,7 +45,7 @@ export const model = {
   eras: ERAS,
   dynasties,
   ordered,
-  milestones: PINS,
+  milestones: [...PINS].sort((a, b) => a[0] - b[0]),
   unity: UNITY,
   unityTypes: UNITY_TYPES,
   laneCount: Math.max(...dynasties.map((d) => d.lane)) + 1,
@@ -81,7 +81,7 @@ export const model = {
     return new Set(
       dynasties
         .filter((d) =>
-          [d.n, d.f, d.c, d.sum, d.fall ?? '', ...d.p, ...(d.ach ?? []), ...d.ev.map((x) => x[1]), ...(d.idioms ?? []).flat(),
+          [d.n, d.f, d.c, d.sum, d.fall ?? '', ...d.p, ...(d.ach ?? []), ...d.ev.map((x) => x[1]), ...(d.idioms ?? []).flat(), ...(d.sections ?? []).flatMap((s) => s.items.flat()),
            ...d.p.map((x) => PEOPLE[canonical(x)]?.join(' ') ?? '')]
             .join(' ')
             .includes(q),

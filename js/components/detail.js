@@ -50,11 +50,19 @@ function infoColumn(d, model) {
     </div>`;
 }
 
+/** 大事记；有分期（phases）时在每个阶段的第一条事件前插入阶段标题 */
 function eventsColumn(d) {
+  const phases = d.phases ?? [];
+  let next = 0;
+  const items = d.ev.map(([y, t]) => {
+    let head = '';
+    while (next < phases.length && y >= phases[next][0]) head = `<li class="phase">${phases[next++][1]}</li>`;
+    return `${head}<li><time>${formatYear(y)}</time><span>${t}</span></li>`;
+  });
   return `
     <div>
       <div class="ev-title">大事记</div>
-      <ol class="events">${list(d.ev, ([y, t]) => `<li><time>${formatYear(y)}</time><span>${t}</span></li>`)}</ol>
+      <ol class="events">${items.join('')}</ol>
     </div>`;
 }
 
@@ -63,12 +71,19 @@ function idiomsBlock(d) {
   return `<div><div class="ev-title">成语典故</div><dl class="idioms">${list(d.idioms, ([w, t]) => `<dt>${w}</dt><dd>${t}</dd>`)}</dl></div>`;
 }
 
+/** 专题条目（如不平等条约、抗战战役、重要会议） */
+function sectionsBlock(d) {
+  return list(d.sections ?? [], (s) =>
+    `<div><div class="ev-title">${s.title}</div><dl class="idioms">${list(s.items, ([w, t]) => `<dt>${w}</dt><dd>${t}</dd>`)}</dl></div>`);
+}
+
 function moreColumn(d) {
-  if (!d.ach && !d.fall && !d.idioms) return '';
+  if (!d.ach && !d.fall && !d.idioms && !d.sections) return '';
   return `
     <div class="d-more">
       ${d.ach ? `<div><div class="ev-title">制度 · 经济 · 文化</div><ul class="ach">${list(d.ach, (x) => `<li>${x}</li>`)}</ul></div>` : ''}
       ${d.fall ? `<div><div class="ev-title">${d.open ? '发展' : '衰亡原因'}</div><p class="fall">${d.fall}</p></div>` : ''}
+      ${sectionsBlock(d)}
       ${idiomsBlock(d)}
     </div>`;
 }
