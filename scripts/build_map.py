@@ -23,6 +23,7 @@ WIDTH = 1000.0
 SIMPLIFY_PX = 0.9      # 简化容差（像素）
 MIN_RING_PX2 = 6.0     # 小于该面积的碎片丢弃
 LABEL_MIN_PX2 = 900.0  # 面积足够大才显示标签
+LABEL_MIN_REGIME_PX2 = 120.0  # 本站收录政权的标签阈值更低（如荆南）
 
 
 def merc(lat):
@@ -64,9 +65,32 @@ WU_230 = [(110.2, 31.5), (111.5, 31.4), (112.3, 31.7), (114, 31.5), (116, 31.6),
           (106.5, 25), (109, 27), (110.2, 29)]
 
 
+# 五代十国（943 年，后晋天福八年）：原始数据无此时期，由 900 年的唐朝范围切分。
+# 燕云十六州（938 年割让）与辽东归辽；南方七国：南唐、吴越、闽、楚、南汉、后蜀、荆南。
+YANYUN_943 = [(104, 40.5), (110.5, 39.6), (112.0, 39.0), (113.5, 39.0), (115.0, 38.9),
+              (116.3, 38.4), (117.5, 38.6), (119.0, 39.2), (122.0, 38.5), (127.0, 38.5)]
+HEXI_943 = [(85, 35.5), (85, 45), (104.5, 45), (104.5, 37.5), (103, 35.5)]
+JIAOZHI_943 = [(100, 15), (100, 23.3), (104, 23.0), (106.5, 22.8), (108.2, 21.5), (110, 15)]
+HOUSHU_943 = [(101.5, 27.5), (102, 33.5), (104.5, 34.8), (106.5, 34.6), (107.5, 33.6), (108.8, 33.0),
+              (110.0, 31.8), (109.5, 29.5), (107.0, 28.5), (105.0, 27.8), (103.5, 26.5)]
+JINGNAN_943 = [(111.0, 29.9), (111.0, 31.2), (112.8, 31.2), (112.8, 29.8)]
+WUYUE_943 = [(118.5, 28.3), (118.5, 30.3), (119.3, 31.3), (120.0, 31.6), (121.5, 31.7),
+             (122.8, 30.8), (122.0, 28.5), (120.6, 27.3)]
+MIN_943 = [(116.0, 24.8), (116.5, 26.0), (117.5, 28.3), (118.5, 28.3), (120.6, 27.3),
+           (121.0, 26.0), (119.8, 25.0), (118.0, 23.3), (117.0, 23.3)]
+NANTANG_943 = [(113.9, 30.6), (114.2, 29.4), (113.8, 25.6), (114.5, 24.7), (116.0, 24.8), (116.5, 26.0),
+               (117.5, 28.3), (118.5, 28.3), (118.5, 30.3), (119.3, 31.3), (120.0, 31.6), (121.5, 31.7),
+               (122.0, 33.8), (119.2, 33.6), (117.5, 33.0), (116.0, 32.5), (114.8, 32.2)]
+CHU_943 = [(108.8, 27.0), (109.5, 28.5), (110.0, 29.8), (112.6, 29.8), (114.2, 29.4), (113.8, 25.6),
+           (112.5, 24.6), (110.5, 24.4), (108.5, 25.0)]
+NANHAN_943 = [(102, 24.5), (106, 24.5), (108.5, 25.2), (110.5, 24.6), (112.5, 24.6), (113.8, 25.4),
+              (114.6, 24.7), (116.0, 24.8), (117.2, 23.6), (118.5, 22), (118.5, 15), (102, 15)]
+SOUTH_REST_943 = [(95, 15), (95, 29.0), (125, 29.0), (125, 15)]   # 其余南方山地，多为羁縻部族
+
+
 # ---------- 帧配置 ----------
 # role: main = 中原王朝；para = 并存政权（本站收录）；adm = 王朝管辖或羁縻区域；other = 周边政权
-# 每项：数据集名称 -> (role, 本站朝代 id 或 None, 中文标签)
+# 每项：数据集名称 -> (role, 本站朝代 id 或 None, 中文标签[, 标签位置 (经度, 纬度)])
 FRAMES = [
     {"src": "bc2000", "year": -2000, "title": "夏", "focus": "xia",
      "desc": "夏朝活动中心在今河南西部、山西南部的伊洛河与汾河下游一带。",
@@ -139,6 +163,23 @@ FRAMES = [
      "map": {"Tang Empire": ("main", "tang", "唐"), "Nan Chao": ("para", "nanzhao", "南诏"),
              "Balhae": ("para", "bohai", "渤海"), "Tibetan Empire": ("other", None, "吐蕃诸部"),
              "Hainan": ("main", "tang", "")}},
+    {"src": "900", "year": 943, "title": "五代十国", "focus": "houjin",
+     "desc": "后晋割让燕云十六州给契丹（辽），北方门户洞开；南方七国分立，经济文化持续发展。",
+     "map": {"Tang Empire": ("main", "houjin", "后晋"), "Khitans": ("para", "liao", "辽"),
+             "Nan Chao": ("para", "dali", "大理"), "Tibetan Empire": ("other", None, "吐蕃诸部"),
+             "Hainan": ("para", "shiguo", ""), "河西诸部": ("other", None, "河西诸部"),
+             "交趾": ("other", None, "交趾（吴权）"), "后蜀": ("para", "shiguo", "后蜀"),
+             "荆南": ("para", "shiguo", "荆南"), "吴越": ("para", "shiguo", "吴越"), "闽": ("para", "shiguo", "闽", (118.4, 26.4)),
+             "南唐": ("para", "shiguo", "南唐", (116.2, 29.2)), "楚": ("para", "shiguo", "楚", (111.4, 27.0)),
+             "南汉": ("para", "shiguo", "南汉", (110.6, 23.3)),
+             "羁縻诸部": ("other", None, ""), "Silla": ("other", None, "高丽")},
+     "merge": [("Balhae", "Khitans")],
+     "fix": [("Tang Empire", "Khitans", YANYUN_943)],
+     "split": [("Tang Empire", "河西诸部", HEXI_943), ("Tang Empire", "交趾", JIAOZHI_943),
+               ("Tang Empire", "后蜀", HOUSHU_943), ("Tang Empire", "荆南", JINGNAN_943),
+               ("Tang Empire", "吴越", WUYUE_943), ("Tang Empire", "闽", MIN_943),
+               ("Tang Empire", "南唐", NANTANG_943), ("Tang Empire", "楚", CHU_943),
+               ("Tang Empire", "南汉", NANHAN_943), ("Tang Empire", "羁縻诸部", SOUTH_REST_943)]},
     {"src": "1000", "year": 1000, "title": "北宋与辽", "focus": "beisong",
      "desc": "澶渊之盟前后，宋辽南北并立，党项、大理分据西北和西南。",
      "map": {"Song Empire": ("main", "beisong", "北宋"), "Liao": ("para", "liao", "辽"),
@@ -201,6 +242,7 @@ CAPITALS = {
     700: [("长安", 108.94, 34.27), ("神都洛阳", 112.45, 34.62), ("逻些", 91.13, 29.65)],
     800: [("长安", 108.94, 34.27), ("逻些", 91.13, 29.65), ("羊苴咩城", 100.16, 25.69), ("上京龙泉府", 129.1, 43.97)],
     900: [("长安", 108.94, 34.27), ("羊苴咩城", 100.16, 25.69), ("上京龙泉府", 129.1, 43.97)],
+    943: [("东京开封", 114.35, 34.79), ("辽上京", 119.39, 43.97), ("金陵", 118.78, 32.05), ("杭州", 120.17, 30.25), ("福州", 119.3, 26.08), ("长沙", 112.98, 28.2), ("兴王府", 113.26, 23.13), ("成都", 104.06, 30.67), ("江陵", 112.2, 30.35), ("大理", 100.16, 25.69)],
     1000: [("东京开封", 114.35, 34.79), ("辽上京", 119.39, 43.97), ("大理", 100.16, 25.69)],
     1100: [("东京开封", 114.35, 34.79), ("辽上京", 119.39, 43.97), ("兴庆府", 106.23, 38.47), ("大理", 100.16, 25.69)],
     1200: [("临安", 120.17, 30.25), ("金中都", 116.35, 39.88), ("兴庆府", 106.23, 38.47), ("大理", 100.16, 25.69)],
@@ -324,6 +366,17 @@ def apply_splits(features, splits):
         by_name[src]["geometry"] = mapping(a.difference(region))
 
 
+def apply_merges(features, merges):
+    """把 src 整体并入 dst（如 926 年渤海被契丹所灭）。"""
+    from shapely.geometry import mapping, shape
+
+    by_name = {ft["properties"].get("NAME"): ft for ft in features if ft.get("geometry")}
+    for src, dst in merges:
+        merged = shape(by_name[dst]["geometry"]).union(shape(by_name[src]["geometry"])).buffer(0)
+        by_name[dst]["geometry"] = mapping(merged)
+        by_name[src]["geometry"] = None
+
+
 def apply_fixes(features, fixes):
     """把 src 位于分界线以北的部分划给 dst（需要 shapely，见 scripts/requirements.txt）。"""
     from shapely.geometry import Polygon, mapping, shape
@@ -341,6 +394,8 @@ def build(src_dir):
     frames = []
     for cfg in FRAMES:
         data = json.load(open(os.path.join(src_dir, f"world_{cfg['src']}.geojson"), encoding="utf-8"))
+        if cfg.get("merge"):
+            apply_merges(data["features"], cfg["merge"])
         if cfg.get("fix"):
             apply_fixes(data["features"], cfg["fix"])
         if cfg.get("split"):
@@ -351,16 +406,18 @@ def build(src_dir):
             geom = ft.get("geometry")
             if name in DROP or not geom or not in_view(geom):
                 continue
-            role, dyn, label = cfg["map"].get(name, ("other", None, NEIGHBORS.get(name, "")))
+            role, dyn, label, *anchor = cfg["map"].get(name, ("other", None, NEIGHBORS.get(name, "")))
             d, area, center = to_path(geom)
             if not d:
                 continue
             shape = {"role": role, "d": d}
             if dyn:
                 shape["id"] = dyn
-            if label and center and area >= LABEL_MIN_PX2 and 0 < center[0] < WIDTH and 0 < center[1] < HEIGHT:
+            min_area = LABEL_MIN_REGIME_PX2 if role in ("main", "para", "adm") else LABEL_MIN_PX2
+            if label and center and area >= min_area and 0 < center[0] < WIDTH and 0 < center[1] < HEIGHT:
                 shape["label"] = label
-                shape["lx"], shape["ly"] = round(center[0]), round(center[1])
+                lx, ly = project(*anchor[0]) if anchor else center
+                shape["lx"], shape["ly"] = round(lx), round(ly)
                 shape["big"] = area > 25000
             shapes.append(shape)
         order = {"other": 0, "adm": 1, "para": 2, "main": 3}

@@ -36,11 +36,15 @@ export function createTerritoryMap(root, model, store) {
       .join('');
   }
 
-  function shapeSVG(s) {
+  // 同一朝代下的多个政权（如十国）交替使用深浅不同的色调，便于区分
+  const TONES = [38, 58, 30, 50, 44, 64, 34];
+
+  function shapeSVG(s, tone) {
     const c = s.id ? colorOf(s.id) : 'var(--muted)';
     const era = model.get(s.id)?.era;
     const fill = s.role === 'adm' ? `fill="url(#hatch-${era})"` : '';
-    return `<path class="shape ${s.role}" ${s.id ? `data-id="${s.id}"` : ''} style="--c:${c}" ${fill} d="${s.d}">
+    const mix = s.role === 'para' && tone != null ? `;--mix:${TONES[tone % TONES.length]}%` : '';
+    return `<path class="shape ${s.role}" ${s.id ? `data-id="${s.id}"` : ''} style="--c:${c}${mix}" ${fill} d="${s.d}">
       <title>${s.label || ROLE_LABEL[s.role]}</title></path>`;
   }
 
@@ -71,7 +75,14 @@ export function createTerritoryMap(root, model, store) {
     const f = frames[index];
     const layer = svg.querySelector('.frame');
     const capitals = f.capitals ?? [];
-    layer.innerHTML = f.shapes.map(shapeSVG).join('') + f.shapes.map((s) => labelSVG(s, capitals)).join('')
+    const seen = new Map();
+    const tones = f.shapes.map((s) => {
+      if (s.role !== 'para' || !s.id) return null;
+      const n = seen.get(s.id) ?? 0;
+      seen.set(s.id, n + 1);
+      return n;
+    });
+    layer.innerHTML = f.shapes.map((s, i) => shapeSVG(s, tones[i])).join('') + f.shapes.map((s) => labelSVG(s, capitals)).join('')
       + capitals.map(capitalSVG).join('');
     layer.classList.remove('fade');
     void layer.getBoundingClientRect();

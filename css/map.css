@@ -21,7 +21,7 @@
 .shape { stroke: var(--surface); stroke-width: 0.8; stroke-linejoin: round; transition: opacity .2s; }
 .shape.other { fill: var(--map-other); }
 .shape.main { fill: color-mix(in srgb, var(--c) 72%, var(--map-land)); cursor: pointer; }
-.shape.para { fill: color-mix(in srgb, var(--c) 38%, var(--map-land)); stroke: var(--c); stroke-dasharray: 4 3; cursor: pointer; }
+.shape.para { fill: color-mix(in srgb, var(--c) var(--mix, 38%), var(--map-land)); stroke: var(--c); stroke-dasharray: 4 3; cursor: pointer; }
 .shape.adm { stroke: var(--c); cursor: pointer; }
 .shape[data-id]:hover { opacity: .85; }
 .shape.on { stroke: var(--ink); stroke-width: 2; stroke-dasharray: none; }
