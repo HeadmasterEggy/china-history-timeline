@@ -57,7 +57,7 @@ export function createTimeline({ scrollEl, zoomInput, zoomIn, zoomOut }, model, 
         if (fits) rowEnd[r] = px + width;
         const top = 24 + r * 20;
         return `<div class="pinline" style="left:${px}px;top:${top + 10}px;height:${PINS_H + 8 - top - 10}px"></div>
-          <button class="pin${fits ? '' : ' dot'}" data-id="${id}" style="left:${px}px;top:${top}px"
+          <button class="pin${fits ? '' : ' dot'}" data-id="${id}" data-year="${year}" style="left:${px}px;top:${top}px"
             title="${formatYear(year)} ${text}" aria-label="${formatYear(year)} ${text}">${fits ? text : ''}</button>`;
       })
       .join('');
@@ -95,6 +95,7 @@ export function createTimeline({ scrollEl, zoomInput, zoomIn, zoomOut }, model, 
     const { grid, axis } = gridHTML(axisY);
     canvas.innerHTML = bandsHTML() + grid + pinsHTML() + blocksHTML() + unityHTML(unityTop) + axis;
     paint();
+    drawMark();
     notifyView();
   }
 
@@ -177,6 +178,12 @@ export function createTimeline({ scrollEl, zoomInput, zoomIn, zoomOut }, model, 
   });
   canvas.addEventListener('click', (e) => {
     if (moved) return void (moved = false);
+    const pin = e.target.closest('.pin');
+    if (pin) {
+      const d = model.get(pin.dataset.id);
+      const ev = d.events.find((x) => x.year === +pin.dataset.year);
+      return ev ? store.openEvent(ev.id) : store.select(d.id, { source: 'timeline' });
+    }
     const target = e.target.closest('[data-id]');
     if (target) store.select(target.dataset.id, { source: 'timeline' });
   });
@@ -189,6 +196,27 @@ export function createTimeline({ scrollEl, zoomInput, zoomIn, zoomOut }, model, 
     if (center) centerOn(model.get(id));
   });
   store.on('search', paint);
+
+  // 定位到某一年：居中并显示一条竖线标记
+  let markedYear = null;
+  function drawMark() {
+    canvas.querySelector('.yearmark')?.remove();
+    if (markedYear == null) return;
+    const m = document.createElement('div');
+    m.className = 'yearmark';
+    m.style.left = `${x(markedYear)}px`;
+    m.dataset.label = formatYear(markedYear);
+    canvas.appendChild(m);
+  }
+  store.on('focus-year', ({ year }) => {
+    markedYear = year;
+    drawMark();
+    scrollToYear(year);
+  });
+  store.on('event-close', () => {
+    markedYear = null;
+    drawMark();
+  });
 
   render();
 

@@ -54,14 +54,16 @@ function infoColumn(d, model) {
 function eventsColumn(d) {
   const phases = d.phases ?? [];
   let next = 0;
-  const items = d.ev.map(([y, t]) => {
+  const items = d.events.map((ev) => {
     let head = '';
-    while (next < phases.length && y >= phases[next][0]) head = `<li class="phase">${phases[next++][1]}</li>`;
-    return `${head}<li><time>${formatYear(y)}</time><span>${t}</span></li>`;
+    while (next < phases.length && ev.year >= phases[next][0]) head = `<li class="phase">${phases[next++][1]}</li>`;
+    const badge = ev.detail ? `<em class="ev-rich">详</em>` : '';
+    return `${head}<li><time>${formatYear(ev.year)}</time>
+      <button class="ev-open" data-event="${ev.id}" title="查看事件详情">${ev.text}${badge}</button></li>`;
   });
   return `
     <div>
-      <div class="ev-title">大事记</div>
+      <div class="ev-title">大事记 <small>点击查看详情</small></div>
       <ol class="events">${items.join('')}</ol>
     </div>`;
 }
@@ -109,6 +111,8 @@ export function createDetail(el, model, store) {
       store.select(go.dataset.go, { source: 'detail' });
       return;
     }
+    const evBtn = e.target.closest('[data-event]');
+    if (evBtn) return store.openEvent(evBtn.dataset.event);
     const chip = e.target.closest('[data-person]');
     if (chip) return showPerson(chip.dataset.person === openPerson ? null : chip.dataset.person);
     if (e.target.closest('[data-close]')) showPerson(null);

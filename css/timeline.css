@@ -58,3 +58,14 @@
 .unity-key span { display: inline-flex; align-items: center; gap: 5px; }
 .unity-key i { width: 18px; height: 10px; border-radius: 2px; border: 1px solid var(--line); }
 .pin.dot { padding: 0; }
+
+/* 事件定位竖线 */
+.yearmark {
+  position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--seal); z-index: 4;
+  pointer-events: none; animation: mark-in .4s ease-out;
+}
+.yearmark::after {
+  content: attr(data-label); position: absolute; bottom: 4px; left: 4px; padding: 0 4px; border-radius: 3px;
+  background: var(--seal); color: var(--paper); font-size: 11px; white-space: nowrap;
+}
+@keyframes mark-in { from { opacity: 0; } to { opacity: 1; } }

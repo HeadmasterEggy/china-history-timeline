@@ -177,8 +177,25 @@ export function createTerritoryMap(root, model, store) {
     if (t) store.select(t.dataset.id, { source: 'map-shape' });
   });
 
+  // 事件定位：优先选含该朝代的帧中年份最接近的一帧
+  store.on('focus-year', ({ year, dynastyId }) => focusYear(year, dynastyId));
+  function focusYear(year, dynastyId) {
+    if (!frames.length) return;
+    const d = model.get(dynastyId);
+    if (d.era === 'modern' && year >= 1912) return goToFrame(frames.indexOf(MODERN_FRAME));
+    const own = frames.filter((f) => !f.modern && f.shapes.some((s) => s.id === dynastyId));
+    const pool = own.length ? own : frames.filter((f) => !f.modern);
+    const best = pool.reduce((a, b) => (Math.abs(b.year - year) < Math.abs(a.year - year) ? b : a));
+    goToFrame(frames.indexOf(best));
+  }
+  function goToFrame(i) {
+    index = i;
+    note = '';
+    renderFrame();
+  }
+
   store.on('select', ({ id, source }) => {
-    if (!frames.length || source === 'map') return highlight();
+    if (!frames.length || source === 'map' || source === 'event') return highlight();
     const picked = frameFor(model.get(id));
     const i = frames.indexOf(picked.frame);
     if (i !== index) {
@@ -214,6 +231,9 @@ export function createTerritoryMap(root, model, store) {
         note = picked.note;
       }
       renderFrame();
+      // 地图数据加载前已打开的事件（如通过 #e-qing-1894 链接进入）
+      const ev = store.state.eventId && model.event(store.state.eventId);
+      if (ev) focusYear(ev.year, ev.dynasty.id);
     })
     .catch(() => {
       root.classList.remove('loading');

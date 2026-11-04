@@ -73,3 +73,15 @@ ol.events li.phase {
 }
 ol.events li.phase::before { display: none; }
 ol.events li.phase:first-child { padding-top: 0; }
+
+/* 可点击的大事 */
+.ev-title small { font-weight: 400; letter-spacing: 0; margin-left: 6px; }
+.ev-open {
+  border: 0; background: none; padding: 0; text-align: left; cursor: pointer; font: inherit; color: inherit;
+  text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 3px;
+}
+.ev-open:hover { color: var(--c); text-decoration-color: currentColor; }
+.ev-rich {
+  font-style: normal; font-size: 11px; margin-left: 6px; padding: 0 4px; border-radius: 3px;
+  background: var(--c); color: var(--on-era); vertical-align: 1px;
+}

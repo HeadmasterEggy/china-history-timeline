@@ -10,6 +10,7 @@ import { createDetail } from './components/detail.js';
 import { createList } from './components/list.js';
 import { createTerritoryMap } from './components/territoryMap.js';
 import { createPeopleIndex } from './components/peopleIndex.js';
+import { createEventCard } from './components/eventCard.js';
 
 const $ = (id) => document.getElementById(id);
 const DEFAULT_ID = 'tang';
@@ -30,27 +31,35 @@ createList($('list'), model, store, {
   onPick: () => $('scroll').scrollIntoView({ behavior: 'smooth', block: 'center' }),
 });
 createTerritoryMap($('map'), model, store);
+createEventCard($('event-dialog'), model, store);
 createPeopleIndex($('people'), model, store, {
   onPick: () => $('detail').scrollIntoView({ behavior: 'smooth', block: 'start' }),
 });
 
 // ---------- 网址锚点：#tang 之类可直接分享某个朝代 ----------
 store.on('select', ({ id }) => {
+  if (store.state.eventId) return; // 事件弹窗打开时由弹窗管理地址
   try {
     history.replaceState(null, '', `#${id}`);
   } catch {
     /* 某些嵌入环境不允许修改地址 */
   }
 });
+// #tang 打开朝代；#e-qing-1840 打开事件
 const fromHash = () => location.hash.slice(1);
-window.addEventListener('hashchange', () => {
-  const id = fromHash();
-  if (model.get(id) && id !== store.state.selectedId) store.select(id, { source: 'hash' });
-});
+function openFromHash() {
+  const h = fromHash();
+  if (h.startsWith('e-') && model.event(h.slice(2))) {
+    if (store.state.eventId !== h.slice(2)) store.openEvent(h.slice(2));
+  } else if (model.get(h) && h !== store.state.selectedId) {
+    store.select(h, { source: 'hash' });
+  }
+}
+window.addEventListener('hashchange', openFromHash);
 
 // ---------- 键盘 ← → 切换相邻朝代 ----------
 document.addEventListener('keydown', (e) => {
-  if (e.target.closest('input') || !store.state.selectedId) return;
+  if (e.target.closest('input') || !store.state.selectedId || store.state.eventId) return;
   const { prev, next } = model.neighbors(model.get(store.state.selectedId));
   const target = { ArrowLeft: prev, ArrowRight: next }[e.key];
   if (!target) return;
@@ -58,4 +67,7 @@ document.addEventListener('keydown', (e) => {
   e.preventDefault();
 });
 
-store.select(model.get(fromHash()) ? fromHash() : DEFAULT_ID, { source: 'init' });
+const initial = fromHash();
+const initialEvent = initial.startsWith('e-') ? model.event(initial.slice(2)) : null;
+store.select(initialEvent?.dynasty.id ?? (model.get(initial) ? initial : DEFAULT_ID), { source: 'init' });
+if (initialEvent) store.openEvent(initialEvent.id);
