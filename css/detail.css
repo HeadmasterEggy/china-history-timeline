@@ -1,7 +1,8 @@
 /* 朝代详情 */
 /* —— 详情 —— */
 .detail{margin-top:28px;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:28px 48px;
-  padding-block:28px;border-top:3px solid var(--c);}
+  border-top:4px solid var(--c);
+  background-image:linear-gradient(to bottom,color-mix(in srgb,var(--c) 7%,transparent),transparent 220px)}
 .detail > .d-more{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:28px 48px}
 @media (min-width:1400px){
   .detail{grid-template-columns:minmax(0,4fr) minmax(0,5fr) minmax(0,4fr)}
@@ -10,7 +11,7 @@
 ul.ach{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
 ul.ach li{padding-left:18px;position:relative}
 ul.ach li::before{content:"";position:absolute;left:2px;top:.72em;width:7px;height:7px;background:var(--c);transform:rotate(45deg)}
-.fall{margin:0;padding:12px 16px;background:color-mix(in srgb,var(--c) 9%,var(--surface));border-radius:6px;border:1px solid color-mix(in srgb,var(--c) 30%,transparent)}
+.fall{margin:0;padding:12px 16px;background:color-mix(in srgb,var(--c) 9%,var(--surface));border-radius:var(--radius-sm);border:1px solid color-mix(in srgb,var(--c) 30%,transparent)}
 .d-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
 .d-era{font-size:12px;letter-spacing:.14em;color:var(--c);font-weight:700}
 .d-name{font:900 clamp(38px,5vw,56px)/1.05 var(--f-serif)}
@@ -20,10 +21,11 @@ dl.kv{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;margin:0}
 dl.kv dt{color:var(--muted);font-size:13px;padding-top:1px}
 dl.kv dd{margin:0}
 .people{display:flex;flex-wrap:wrap;gap:6px}
-.people span{border:1px solid var(--line);border-radius:4px;padding:0 8px;font-size:13px;background:var(--surface)}
+.people span{border:1px solid var(--line);border-radius:999px;padding:0 8px;font-size:13px;background:var(--surface)}
 .nav{display:flex;gap:10px;margin-top:22px}
-.nav button{flex:1;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:8px 12px;cursor:pointer;text-align:left;font-size:13px;color:var(--muted)}
+.nav button{flex:1;border:1px solid var(--line);background:var(--surface-2);border-radius:var(--radius-sm);transition:border-color .15s;padding:8px 12px;cursor:pointer;text-align:left;font-size:13px;color:var(--muted)}
 .nav button b{display:block;color:var(--ink);font:600 16px/1.3 var(--f-serif)}
+.nav button:not(:disabled):hover{border-color:var(--c)}
 .nav button:last-child{text-align:right}
 .nav button:disabled{opacity:.4;cursor:default}
 .ev-title{font:600 13px/1 var(--f-sans);letter-spacing:.14em;color:var(--muted);margin-bottom:12px}
@@ -46,13 +48,13 @@ dl.idioms dd { margin: 0; font-size: 14px; color: var(--muted); }
 
 /* 人物 */
 .people .chip-person {
-  border: 1px solid var(--line); border-radius: 4px; padding: 0 8px; font-size: 13px;
-  background: var(--surface); cursor: pointer;
+  border: 1px solid var(--line); border-radius: 999px; padding: 1px 10px; font-size: 13px;
+  background: var(--surface-2); cursor: pointer; transition: border-color .15s, background .15s;
 }
 .people .chip-person:hover { border-color: var(--c); }
 .people .chip-person.on { background: var(--c); border-color: var(--c); color: var(--on-era); }
 .person-card {
-  margin-top: 14px; padding: 14px 16px; border-radius: 6px; background: var(--surface);
+  margin-top: 14px; padding: 14px 16px; border-radius: var(--radius-sm); background: var(--surface-2);
   border: 1px solid color-mix(in srgb, var(--c) 45%, var(--line)); animation: pc-in .2s ease-out;
 }
 @keyframes pc-in { from { transform: translateY(-4px); opacity: .4; } to { transform: none; opacity: 1; } }
@@ -68,11 +70,11 @@ dl.idioms dd { margin: 0; font-size: 14px; color: var(--muted); }
 
 /* 大事记分期标题 */
 ol.events li.phase {
-  display: block; padding: 14px 0 4px 100px; font: 600 14px/1.3 var(--f-serif); color: var(--c);
-  letter-spacing: .08em;
+  display: block; margin: 12px 0 4px 100px; padding: 3px 10px; font: 600 14px/1.3 var(--f-serif); color: var(--c);
+  letter-spacing: .08em; width: fit-content; border-radius: 999px; background: color-mix(in srgb, var(--c) 12%, transparent);
 }
 ol.events li.phase::before { display: none; }
-ol.events li.phase:first-child { padding-top: 0; }
+ol.events li.phase:first-child { margin-top: 0; }
 
 /* 可点击的大事 */
 .ev-title small { font-weight: 400; letter-spacing: 0; margin-left: 6px; }

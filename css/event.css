@@ -2,14 +2,14 @@
 
 .ec {
   width: min(760px, calc(100vw - 32px)); max-height: min(86vh, 900px); padding: 0;
-  border: 1px solid var(--line); border-top: 4px solid var(--c); border-radius: 10px;
-  background: var(--paper); color: var(--ink);
+  border: 1px solid var(--line); border-top: 4px solid var(--c); border-radius: var(--radius);
+  background: var(--surface); box-shadow: var(--shadow-lg); color: var(--ink);
 }
-.ec::backdrop { background: rgb(0 0 0 / .45); }
+.ec::backdrop { background: rgb(20 14 8 / .5); backdrop-filter: blur(3px); }
 .ec-body { padding: 26px 28px 22px; overflow-y: auto; max-height: inherit; }
 .ec-close {
   position: absolute; top: 10px; right: 12px; z-index: 1; width: 34px; height: 34px; border: 0; border-radius: 50%;
-  background: var(--surface); color: var(--muted); font-size: 22px; line-height: 1; cursor: pointer;
+  background: var(--surface-2); color: var(--muted); font-size: 22px; line-height: 1; cursor: pointer;
 }
 .ec-head { padding-right: 40px; }
 .ec-dyn {

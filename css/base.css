@@ -1,46 +1,69 @@
 /* 基础样式、卷首、工具条、页脚 */
 *{box-sizing:border-box}
 html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.7 var(--f-sans);
-  -webkit-font-smoothing:antialiased}
+/* 纸面：底色上叠一层极淡的纤维噪点和顶部朱砂色光晕 */
+body{margin:0;color:var(--ink);font:15px/1.7 var(--f-sans);-webkit-font-smoothing:antialiased;
+  background-color:var(--paper);
+  background-image:
+    radial-gradient(1200px 500px at 70% -200px,color-mix(in srgb,var(--seal) 9%,transparent),transparent 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .4 0 0 0 0 .3 0 0 0 0 .2 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-attachment:fixed}
+::selection{background:color-mix(in srgb,var(--seal) 28%,transparent)}
 .wrap{max-width:1440px;margin:0 auto;
   padding-left:max(clamp(16px,2.5vw,40px),env(safe-area-inset-left,0px));padding-right:max(clamp(16px,2.5vw,40px),env(safe-area-inset-right,0px))}
 h1,h2,h3{text-wrap:balance;margin:0}
 button{font:inherit;color:inherit}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+/* —— 版块卡片：详情、地图、人物、一览共用 —— */
+.detail,.map-sec,.people-sec,section.list{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:clamp(20px,2.4vw,32px) clamp(18px,2.6vw,36px);margin-top:28px}
+.map-sec h2,.people-sec h2,section.list h2{display:flex;align-items:center;gap:12px}
+.map-sec h2::before,.people-sec h2::before,section.list h2::before{
+  content:"";width:6px;height:.9em;border-radius:2px;background:var(--seal)}
 
 /* —— 卷首 —— */
-header.top{padding-block:36px 20px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px 40px;justify-content:space-between}
+header.top{padding-block:40px 24px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px 40px;justify-content:space-between}
 .title{display:flex;align-items:center;gap:18px}
-.seal{width:58px;height:58px;flex:none;border:2px solid var(--seal);border-radius:6px;color:var(--seal);
-  display:grid;grid-template-columns:1fr 1fr;place-items:center;font:900 19px/1 var(--f-serif);padding:5px}
+.seal{width:60px;height:60px;flex:none;border-radius:8px;background:var(--seal);color:var(--surface);
+  display:grid;grid-template-columns:1fr 1fr;place-items:center;font:900 19px/1 var(--f-serif);padding:6px;
+  box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--surface) 70%,transparent),inset 0 0 0 4px var(--seal);transform:rotate(-3deg)}
 h1{font:400 clamp(40px,6vw,64px)/1 var(--f-brush);letter-spacing:.04em}
 .sub{color:var(--muted);margin-top:8px;font-size:14px}
-.facts{display:flex;gap:28px;flex-wrap:wrap}
-.fact b{display:block;font:900 26px/1.1 var(--f-serif);font-variant-numeric:tabular-nums}
+.facts{display:flex;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.fact{padding:12px 22px;text-align:center}
+.fact + .fact{border-left:1px solid var(--line)}
+.fact b{display:block;font:900 28px/1.1 var(--f-serif);font-variant-numeric:tabular-nums;color:var(--seal)}
 .fact span{font-size:12px;color:var(--muted);letter-spacing:.08em}
 
 
 /* —— 工具条 —— */
 .tools{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;padding-block:16px 10px}
 .eras{display:flex;flex-wrap:wrap;gap:6px}
-.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:3px 12px 3px 10px;
-  font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
-.chip::before{content:"";width:9px;height:9px;border-radius:2px;background:var(--c)}
-.chip:hover{border-color:var(--c)}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 13px 4px 11px;
+  font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:background .15s,border-color .15s,transform .15s}
+.chip::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--c)}
+.chip:hover{border-color:var(--c);background:color-mix(in srgb,var(--c) 12%,var(--surface));transform:translateY(-1px)}
 .spacer{flex:1}
 .zoom{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
-.zoom button{width:30px;height:30px;border:1px solid var(--line);background:var(--surface);border-radius:6px;cursor:pointer;font-size:17px;line-height:1}
+.zoom button{width:30px;height:30px;border:1px solid var(--line);background:var(--surface);border-radius:50%;cursor:pointer;font-size:17px;line-height:1}
+.zoom button:hover{border-color:var(--muted)}
 .zoom input{width:120px;accent-color:var(--accent)}
 .search{position:relative}
-.search input{width:220px;max-width:100%;padding:6px 12px;border:1px solid var(--line);border-radius:6px;
-  background:var(--surface);color:var(--ink);font:inherit;font-size:14px}
-.search small{position:absolute;left:0;top:100%;font-size:12px;color:var(--muted);white-space:nowrap}
+.search input{width:240px;max-width:100%;padding:7px 14px 7px 34px;border:1px solid var(--line);border-radius:999px;
+  background:var(--surface) no-repeat 12px 50%/14px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23998f80' stroke-width='1.8'%3E%3Ccircle cx='7' cy='7' r='5'/%3E%3Cpath d='m11 11 3.5 3.5'/%3E%3C/svg%3E");
+  color:var(--ink);font:inherit;font-size:14px;transition:border-color .15s,box-shadow .15s}
+.search input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 20%,transparent)}
+.search small{position:absolute;left:14px;top:100%;font-size:12px;color:var(--muted);white-space:nowrap}
 
 
-footer{color:var(--muted);font-size:12px;padding-block:0 40px}
+footer{color:var(--muted);font-size:12px;padding-block:28px 40px;text-align:center}
 
 @media (max-width: 760px) {
+  .facts { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); }
+  .fact { padding: 10px 6px; }
+  .fact b { font-size: 22px; }
   .search { flex: 1 1 100%; }
   .search input { width: 100%; }
   .spacer { display: none; }
