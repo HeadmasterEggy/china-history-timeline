@@ -62,3 +62,8 @@
   .ec-steps li { grid-template-columns: 1fr; gap: 0; }
   .ec-head h3 { font-size: 24px; }
 }
+
+/* 延伸阅读 */
+.ec-reading { display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+.ec-reading > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; }
+.rd-label { color: var(--muted); font-size: 12px; width: 5em; flex: none; }

@@ -1,6 +1,7 @@
 // 朝代详情：概况、大事记、制度成就与衰亡原因
 
 import { formatSpan, formatYear, duration, eraColor } from '../core/format.js';
+import { encyclopediaLinks, sourceLink } from '../core/links.js';
 
 const list = (items, render) => items.map(render).join('');
 
@@ -20,6 +21,7 @@ function personCard(person, currentId) {
         <button class="pc-close" data-close aria-label="关闭">×</button></div>
       <div class="pc-role">${person.role}</div>
       <p>${person.bio}</p>
+      <div class="pc-ext">延伸阅读：${encyclopediaLinks(person.name)}</div>
       ${person.dynasties.length > 1 ? `<div class="pc-links">出现于：${links}</div>` : ''}
     </div>`;
 }
@@ -40,6 +42,7 @@ function infoColumn(d, model) {
         <dt>都城</dt><dd>${d.c}</dd>
         ${rulers ? `<dt>${d.open ? '历任国家主席' : '君主'}</dt><dd>${rulers}</dd>` : ''}
         <dt>同期政权</dt><dd>${concurrent}</dd>
+        <dt>延伸阅读</dt><dd>${encyclopediaLinks(d.wiki)}${d.histories.length ? `<span class="d-src">史书：${list(d.histories, sourceLink)}</span>` : ''}</dd>
         <dt>代表人物</dt><dd><div class="people">${list(d.p, (x) => personChip(x, model))}</div></dd>
       </dl>
       <div class="person-slot"></div>

@@ -48,3 +48,12 @@ footer{color:var(--muted);font-size:12px;padding-block:0 40px}
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
 }
+
+/* 外部链接（百科、史料、书籍），用于事件、朝代与人物 */
+.ext-links { display: inline-flex; gap: 10px; }
+.ext-links a, .ext-source, .ext-book { color: var(--accent); text-decoration: none; }
+.ext-links a::after { content: " ↗"; font-size: .85em; }
+.ext-links a:hover, .ext-source:hover, .ext-book:hover { text-decoration: underline; }
+.ext-book small { color: var(--muted); margin-left: 4px; }
+.d-src { margin-left: 14px; }
+.pc-ext { margin-top: 8px; font-size: 13px; color: var(--muted); }

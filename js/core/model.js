@@ -8,6 +8,7 @@ import { UNITY, UNITY_TYPES } from '../../data/unity.js';
 import { IDIOMS } from '../../data/idioms.js';
 import { PEOPLE, ALIASES } from '../../data/people.js';
 import { EVENT_DETAILS } from '../../data/events.js';
+import { DYNASTY_SOURCES } from '../../data/sources.js';
 import { drawStart } from './format.js';
 
 function mergeDetails(list) {
@@ -20,6 +21,8 @@ function mergeDetails(list) {
       for (const key of ['kings', 'last', 'ach', 'fall', 'phases', 'sections']) if (more[key]) d[key] = more[key];
     }
     if (IDIOMS[d.id]) d.idioms = IDIOMS[d.id];
+    d.wiki = DYNASTY_SOURCES[d.id]?.wiki ?? d.n;
+    d.histories = DYNASTY_SOURCES[d.id]?.books ?? [];
     d.ev.sort((a, b) => a[0] - b[0]);
     return d;
   });
@@ -42,7 +45,7 @@ for (const d of ordered) {
     const n = (perYear.get(year) ?? 0) + 1;
     perYear.set(year, n);
     const base = `${d.id}-${year < 0 ? `b${-year}` : year}`;
-    const ev = { id: n === 1 ? base : `${base}-${n}`, year, text, dynasty: d, detail: n === 1 ? EVENT_DETAILS[`${d.id}-${year}`] : undefined };
+    const ev = { id: n === 1 ? base : `${base}-${n}`, year, text, dynasty: d, detail: n === 1 ? EVENT_DETAILS[base] : undefined };
     eventById.set(ev.id, ev);
     return ev;
   });

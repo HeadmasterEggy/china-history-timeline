@@ -10,6 +10,7 @@ import { UNITY } from '../data/unity.js';
 import { IDIOMS } from '../data/idioms.js';
 import { PEOPLE, ALIASES } from '../data/people.js';
 import { EVENT_DETAILS } from '../data/events.js';
+import { DYNASTY_SOURCES } from '../data/sources.js';
 
 const errors = [];
 const ids = new Set(DYNASTIES.map((d) => d.id));
@@ -33,12 +34,14 @@ const listed = new Set(DYNASTIES.flatMap((d) => d.p).concat(Object.values(DETAIL
 for (const name of listed) if (!PEOPLE[ALIASES[name] ?? name]) errors.push(`people.js：缺少「${name}」的简介`);
 for (const name of Object.keys(PEOPLE)) if (![...listed].some((n) => (ALIASES[n] ?? n) === name)) errors.push(`people.js：「${name}」未出现在任何朝代`);
 for (const [key, ev] of Object.entries(EVENT_DETAILS)) {
-  const [id, year] = [key.slice(0, key.lastIndexOf('-')), +key.slice(key.lastIndexOf('-') + 1)];
+  const tail = key.slice(key.lastIndexOf('-') + 1);
+  const [id, year] = [key.slice(0, key.lastIndexOf('-')), tail.startsWith('b') ? -tail.slice(1) : +tail];
   const d = DYNASTIES.find((x) => x.id === id);
   const evs = d ? [...d.ev, ...(DETAILS[id]?.ev ?? [])] : [];
   if (!evs.some(([y]) => y === year)) errors.push(`events.js：${key} 在大事记中找不到对应年份的事件`);
   for (const name of ev.people ?? []) if (!PEOPLE[ALIASES[name] ?? name]) errors.push(`events.js：${key} 的人物「${name}」没有简介`);
 }
+for (const d of DYNASTIES) if (!DYNASTY_SOURCES[d.id]) errors.push(`sources.js：缺少「${d.n}」的史书与词条`);
 for (const k of Object.keys(IDIOMS)) if (!ids.has(k)) errors.push(`idioms.js：未知朝代 ${k}`);
 for (const [, name, id] of PINS) if (!ids.has(id)) errors.push(`milestones.js：${name} 指向未知朝代 ${id}`);
 

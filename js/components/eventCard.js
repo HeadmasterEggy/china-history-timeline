@@ -2,6 +2,7 @@
 // 所有事件都显示相关人物、同时期大事，并可在时间轴和地图上定位。
 
 import { formatYear, eraColor } from '../core/format.js';
+import { encyclopediaLinks, sourceLink, bookLink, eventTerm } from '../core/links.js';
 
 const list = (items, render) => items.map(render).join('');
 
@@ -14,6 +15,17 @@ function richBody(detail) {
     <ul class="ec-result">${list(detail.result, (r) => `<li>${r}</li>`)}</ul>
     <h4>影响</h4>
     <p>${detail.impact}</p>`;
+}
+
+function readingBlock(ev) {
+  const refs = ev.detail?.refs ?? {};
+  const sources = refs.sources ?? ev.dynasty.histories;
+  return `<h4>延伸阅读</h4>
+    <div class="ec-reading">
+      <div><span class="rd-label">百科</span>${encyclopediaLinks(eventTerm(ev))}</div>
+      ${sources.length ? `<div><span class="rd-label">史料原文</span>${list(sources, sourceLink)}</div>` : ''}
+      ${refs.books?.length ? `<div><span class="rd-label">推荐书籍</span>${list(refs.books, bookLink)}</div>` : ''}
+    </div>`;
 }
 
 function eventLink(ev) {
@@ -47,6 +59,7 @@ export function createEventCard(dialog, model, store) {
         <button data-action="timeline">在时间轴上定位</button>
         <button data-action="map">查看当时疆域</button>
       </div>
+      ${readingBlock(ev)}
       ${near.length ? `<h4>同一时期</h4><div class="ec-near">${list(near, eventLink)}</div>` : ''}
       <nav class="ec-nav">
         ${prev ? eventLink(prev).replace('ec-link', 'ec-link prev') : '<span></span>'}
@@ -72,6 +85,7 @@ export function createEventCard(dialog, model, store) {
 
   dialog.addEventListener('click', (e) => {
     if (e.target === dialog) return dialog.close(); // 点击遮罩关闭
+    if (e.target.closest('a[href]')) return; // 外部链接：浏览器在新标签页打开
     const t = e.target.closest('[data-event], [data-person], [data-dynasty], [data-action], [data-close]');
     if (!t) return;
     if (t.dataset.close !== undefined) return dialog.close();
