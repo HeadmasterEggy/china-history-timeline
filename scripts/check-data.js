@@ -1,7 +1,7 @@
 // 数据自检：泳道重叠、引用的朝代 id、年份顺序、地图帧引用
 // 用法：npm run check
 
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { DYNASTIES } from '../data/dynasties.js';
 import { DETAILS } from '../data/details.js';
 import { PINS } from '../data/milestones.js';
@@ -33,6 +33,15 @@ for (const [k, more] of Object.entries(DETAILS))
 const listed = new Set(DYNASTIES.flatMap((d) => d.p).concat(Object.values(DETAILS).flatMap((m) => m.p ?? [])));
 for (const name of listed) if (!PEOPLE[ALIASES[name] ?? name]) errors.push(`people.js：缺少「${name}」的简介`);
 for (const name of Object.keys(PEOPLE)) if (![...listed].some((n) => (ALIASES[n] ?? n) === name)) errors.push(`people.js：「${name}」未出现在任何朝代`);
+// 对象字面量中的重复键会被静默覆盖，需在源文件层面检查
+const seenKeys = new Map();
+const eventsDir = new URL('../data/events/', import.meta.url);
+for (const file of readdirSync(eventsDir).filter((f) => f.endsWith('.js') && f !== 'index.js'))
+  for (const [, key] of readFileSync(new URL(file, eventsDir), 'utf8').matchAll(/^  '([^']+)':/gm)) {
+    if (seenKeys.has(key)) errors.push(`events：事件 ${key} 重复定义（${seenKeys.get(key)} 与 ${file}）`);
+    seenKeys.set(key, file);
+  }
+
 for (const [key, ev] of Object.entries(EVENT_DETAILS)) {
   const m = key.match(/^(.+?)-(b?)(\d+)(?:-(\d+))?$/);
   const [id, year, nth] = m ? [m[1], m[2] ? -m[3] : +m[3], +(m[4] ?? 1)] : [key, NaN, 1];
