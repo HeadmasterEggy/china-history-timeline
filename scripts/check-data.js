@@ -8,6 +8,7 @@ import { PINS } from '../data/milestones.js';
 import { ERAS } from '../data/eras.js';
 import { UNITY } from '../data/unity.js';
 import { IDIOMS } from '../data/idioms.js';
+import { PEOPLE, ALIASES } from '../data/people.js';
 
 const errors = [];
 const ids = new Set(DYNASTIES.map((d) => d.id));
@@ -27,6 +28,9 @@ for (const [k, more] of Object.entries(DETAILS))
     const d = DYNASTIES.find((x) => x.id === k);
     if (d && (y < d.s - 5 || y > d.e + 5)) errors.push(`${d.n}：补充事件年份超出范围 ${y} ${t}`);
   }
+const listed = new Set(DYNASTIES.flatMap((d) => d.p).concat(Object.values(DETAILS).flatMap((m) => m.p ?? [])));
+for (const name of listed) if (!PEOPLE[ALIASES[name] ?? name]) errors.push(`people.js：缺少「${name}」的简介`);
+for (const name of Object.keys(PEOPLE)) if (![...listed].some((n) => (ALIASES[n] ?? n) === name)) errors.push(`people.js：「${name}」未出现在任何朝代`);
 for (const k of Object.keys(IDIOMS)) if (!ids.has(k)) errors.push(`idioms.js：未知朝代 ${k}`);
 for (const [, name, id] of PINS) if (!ids.has(id)) errors.push(`milestones.js：${name} 指向未知朝代 ${id}`);
 

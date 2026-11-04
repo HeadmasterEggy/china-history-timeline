@@ -43,3 +43,25 @@ dl.idioms { margin: 0; display: grid; gap: 4px 0; }
 dl.idioms dt { font: 600 16px/1.4 var(--f-serif); color: var(--c); margin-top: 8px; }
 dl.idioms dt:first-child { margin-top: 0; }
 dl.idioms dd { margin: 0; font-size: 14px; color: var(--muted); }
+
+/* 人物 */
+.people .chip-person {
+  border: 1px solid var(--line); border-radius: 4px; padding: 0 8px; font-size: 13px;
+  background: var(--surface); cursor: pointer;
+}
+.people .chip-person:hover { border-color: var(--c); }
+.people .chip-person.on { background: var(--c); border-color: var(--c); color: var(--on-era); }
+.person-card {
+  margin-top: 14px; padding: 14px 16px; border-radius: 6px; background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--c) 45%, var(--line)); animation: pc-in .2s ease-out;
+}
+@keyframes pc-in { from { transform: translateY(-4px); opacity: .4; } to { transform: none; opacity: 1; } }
+.pc-head { display: flex; align-items: baseline; gap: 12px; }
+.pc-head h3 { font: 900 22px/1.2 var(--f-serif); }
+.pc-head span { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+.pc-close { margin-left: auto; border: 0; background: none; font-size: 20px; line-height: 1; cursor: pointer; color: var(--muted); }
+.pc-role { font-size: 13px; color: var(--c); font-weight: 700; margin-top: 2px; }
+.person-card p { margin: 8px 0 0; }
+.pc-links { margin-top: 10px; font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.pc-links button { border: 1px solid var(--line); background: none; border-radius: 4px; padding: 0 8px; cursor: pointer; font-size: 13px; }
+.pc-links b { padding: 0 8px; color: var(--ink); }

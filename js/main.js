@@ -9,6 +9,7 @@ import { createEraNav, createSearch } from './components/toolbar.js';
 import { createDetail } from './components/detail.js';
 import { createList } from './components/list.js';
 import { createTerritoryMap } from './components/territoryMap.js';
+import { createPeopleIndex } from './components/peopleIndex.js';
 
 const $ = (id) => document.getElementById(id);
 const DEFAULT_ID = 'tang';
@@ -29,6 +30,9 @@ createList($('list'), model, store, {
   onPick: () => $('scroll').scrollIntoView({ behavior: 'smooth', block: 'center' }),
 });
 createTerritoryMap($('map'), model, store);
+createPeopleIndex($('people'), model, store, {
+  onPick: () => $('detail').scrollIntoView({ behavior: 'smooth', block: 'start' }),
+});
 
 // ---------- 网址锚点：#tang 之类可直接分享某个朝代 ----------
 store.on('select', ({ id }) => {

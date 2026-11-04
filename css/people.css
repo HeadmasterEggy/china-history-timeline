@@ -1,0 +1,31 @@
+/* 历史人物索引 */
+
+.people-sec { padding-block: 28px 8px; border-top: 1px solid var(--line); margin-top: 20px; }
+.people-sec h2 { font: 900 26px/1.2 var(--f-serif); margin-bottom: 4px; }
+.people-sec > p { color: var(--muted); margin: 0 0 8px; }
+.pi-grp { margin-top: 18px; }
+.pi-grp h3 {
+  font: 600 15px/1 var(--f-serif); color: var(--c); letter-spacing: .12em;
+  padding-bottom: 8px; border-bottom: 1px solid var(--line); margin-bottom: 10px;
+  display: flex; justify-content: space-between;
+}
+.pi-grp h3 span { font: 400 12px var(--f-sans); color: var(--muted); letter-spacing: 0; }
+.pi-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.pi-list button {
+  display: inline-flex; align-items: baseline; gap: 6px; padding: 3px 10px; cursor: pointer;
+  border: 1px solid var(--line); border-radius: 4px; background: var(--surface);
+}
+.pi-list button:hover { border-color: var(--c); }
+.pi-list b { font: 600 14px var(--f-serif); }
+.pi-list small { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* 折叠：默认只显示前几行 */
+.pi-wrap.collapsed { max-height: 460px; overflow: hidden; position: relative; }
+.pi-wrap.collapsed::after {
+  content: ""; position: absolute; inset: auto 0 0 0; height: 90px;
+  background: linear-gradient(to bottom, transparent, var(--paper));
+}
+.pi-toggle {
+  margin-top: 12px; border: 1px solid var(--line); background: var(--surface); border-radius: 6px;
+  padding: 6px 16px; cursor: pointer; font-size: 13px;
+}

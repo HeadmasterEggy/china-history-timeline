@@ -6,6 +6,7 @@ import { DETAILS } from '../../data/details.js';
 import { PINS } from '../../data/milestones.js';
 import { UNITY, UNITY_TYPES } from '../../data/unity.js';
 import { IDIOMS } from '../../data/idioms.js';
+import { PEOPLE, ALIASES } from '../../data/people.js';
 import { drawStart } from './format.js';
 
 function mergeDetails(list) {
@@ -26,8 +27,18 @@ function mergeDetails(list) {
 const dynasties = mergeDetails(DYNASTIES);
 const byId = new Map(dynasties.map((d) => [d.id, d]));
 const eraById = new Map(ERAS.map((e) => [e.id, e]));
+
+// 人物索引：规范名 -> 出现的朝代（按时间顺序）
+const canonical = (name) => ALIASES[name] ?? name;
+const dynastiesOf = new Map();
 /** 按起始年排序的阅读顺序，用于"上一个 / 下一个" */
 const ordered = [...dynasties].sort((a, b) => a.s - b.s || a.lane - b.lane);
+for (const d of ordered)
+  for (const name of d.p) {
+    const key = canonical(name);
+    if (!dynastiesOf.has(key)) dynastiesOf.set(key, []);
+    if (!dynastiesOf.get(key).includes(d)) dynastiesOf.get(key).push(d);
+  }
 
 export const model = {
   NOW,
@@ -54,14 +65,24 @@ export const model = {
     return dynasties.filter((o) => o !== d && drawStart(o) < d.e && o.e > a);
   },
 
-  /** 全文搜索：名称、建立者、都城、简介、人物、事件、成就 */
+  /** 人物资料：{ name, life, role, bio, dynasties }，无资料时返回 null */
+  person(name) {
+    const key = canonical(name);
+    const info = PEOPLE[key];
+    if (!info) return null;
+    const [life, role, bio] = info;
+    return { name: key, life, role, bio, dynasties: dynastiesOf.get(key) ?? [] };
+  },
+
+  /** 全文搜索：名称、建立者、都城、简介、人物及其简介、事件、成就、成语 */
   search(q) {
     q = q.trim();
     if (!q) return null;
     return new Set(
       dynasties
         .filter((d) =>
-          [d.n, d.f, d.c, d.sum, d.fall ?? '', ...d.p, ...(d.ach ?? []), ...d.ev.map((x) => x[1]), ...(d.idioms ?? []).flat()]
+          [d.n, d.f, d.c, d.sum, d.fall ?? '', ...d.p, ...(d.ach ?? []), ...d.ev.map((x) => x[1]), ...(d.idioms ?? []).flat(),
+           ...d.p.map((x) => PEOPLE[canonical(x)]?.join(' ') ?? '')]
             .join(' ')
             .includes(q),
         )

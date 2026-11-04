@@ -4,6 +4,26 @@ import { formatSpan, formatYear, duration, eraColor } from '../core/format.js';
 
 const list = (items, render) => items.map(render).join('');
 
+function personChip(name, model) {
+  return model.person(name)
+    ? `<button class="chip-person" data-person="${name}" aria-expanded="false">${name}</button>`
+    : `<span>${name}</span>`;
+}
+
+/** 人物卡片：生卒、身份、简介，以及其出现的所有朝代 */
+function personCard(person, currentId) {
+  const links = person.dynasties
+    .map((d) => (d.id === currentId ? `<b>${d.n}</b>` : `<button data-go="${d.id}" data-keep="${person.name}">${d.n}</button>`))
+    .join('');
+  return `<div class="person-card" role="region" aria-label="${person.name}简介">
+      <div class="pc-head"><h3>${person.name}</h3><span>${person.life}</span>
+        <button class="pc-close" data-close aria-label="关闭">×</button></div>
+      <div class="pc-role">${person.role}</div>
+      <p>${person.bio}</p>
+      ${person.dynasties.length > 1 ? `<div class="pc-links">出现于：${links}</div>` : ''}
+    </div>`;
+}
+
 function infoColumn(d, model) {
   const era = model.era(d.era);
   const { prev, next } = model.neighbors(d);
@@ -20,8 +40,9 @@ function infoColumn(d, model) {
         <dt>都城</dt><dd>${d.c}</dd>
         ${rulers ? `<dt>君主</dt><dd>${rulers}</dd>` : ''}
         <dt>同期政权</dt><dd>${concurrent}</dd>
-        <dt>代表人物</dt><dd><div class="people">${list(d.p, (x) => `<span>${x}</span>`)}</div></dd>
+        <dt>代表人物</dt><dd><div class="people">${list(d.p, (x) => personChip(x, model))}</div></dd>
       </dl>
+      <div class="person-slot"></div>
       <div class="nav">
         <button data-go="${prev?.id ?? ''}" ${prev ? '' : 'disabled'}>← 上一个<b>${prev?.n ?? '—'}</b></button>
         <button data-go="${next?.id ?? ''}" ${next ? '' : 'disabled'}>下一个 →<b>${next?.n ?? '—'}</b></button>
@@ -53,14 +74,42 @@ function moreColumn(d) {
 }
 
 export function createDetail(el, model, store) {
+  let openPerson = null;
+
+  function showPerson(name) {
+    openPerson = name;
+    const slot = el.querySelector('.person-slot');
+    el.querySelectorAll('[data-person]').forEach((b) => {
+      const on = b.dataset.person === name;
+      b.classList.toggle('on', on);
+      b.setAttribute('aria-expanded', on);
+    });
+    slot.innerHTML = name ? personCard(model.person(name), store.state.selectedId) : '';
+  }
+
   el.addEventListener('click', (e) => {
-    const id = e.target.closest('[data-go]')?.dataset.go;
-    if (id) store.select(id, { source: 'detail' });
+    const go = e.target.closest('[data-go]');
+    if (go?.dataset.go) {
+      openPerson = go.dataset.keep ?? null;
+      store.select(go.dataset.go, { source: 'detail' });
+      return;
+    }
+    const chip = e.target.closest('[data-person]');
+    if (chip) return showPerson(chip.dataset.person === openPerson ? null : chip.dataset.person);
+    if (e.target.closest('[data-close]')) showPerson(null);
+  });
+
+  store.on('person', ({ name }) => {
+    const d = model.get(store.state.selectedId);
+    showPerson(d.p.find((x) => model.person(x)?.name === name) ?? null);
   });
 
   store.on('select', ({ id }) => {
     const d = model.get(id);
     el.style.setProperty('--c', eraColor(d.era));
     el.innerHTML = infoColumn(d, model) + eventsColumn(d) + moreColumn(d);
+    // 从人物卡片跳转到其他朝代时，保持该人物卡片打开
+    const keep = openPerson && d.p.find((x) => model.person(x)?.name === model.person(openPerson)?.name);
+    showPerson(keep ?? null);
   });
 }
