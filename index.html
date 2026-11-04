@@ -1,187 +1,26 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>华夏历史长卷</title>
-<meta name="description" content="从夏朝到中华人民共和国：按真实时间比例排布的中国历代政权交互时间轴。">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;900&display=swap">
-<style>
-/* 布局：一幅横向展开的"长卷"——上方全景缩略条，中部按真实年份比例排布的政权泳道，下方为选中朝代的详情与全部朝代一览 */
-:root{
-  --paper:#ECEEE8; --surface:#F7F8F4; --ink:#1B2124; --muted:#5B6662; --line:#CBD2CA;
-  --accent:#2C5C8C; --seal:#A8372B; --on-era:#FFFFFF;
-  --e-xianqin:#94642F; --e-qinhan:#AE412E; --e-weijin:#93405C; --e-suitang:#A47F10;
-  --e-songyuan:#2C785D; --e-mingqing:#2D5F9C; --e-modern:#4A546D;
-  --f-brush:"Ma Shan Zheng","STKaiti","KaiTi","Kaiti SC",serif;
-  --f-serif:"Noto Serif SC","Songti SC","SimSun",serif;
-  --f-sans:"Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
-  --lane-h:46px;
-  color-scheme:light;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --paper:#101516; --surface:#182022; --ink:#E2E6E0; --muted:#98A29D; --line:#2C3638;
-    --accent:#86AEDB; --seal:#E27563; --on-era:#0E1314;
-    --e-xianqin:#D39D60; --e-qinhan:#E2755E; --e-weijin:#D27C98; --e-suitang:#D8B44A;
-    --e-songyuan:#62BB97; --e-mingqing:#76A2DC; --e-modern:#98A2C0;
-    color-scheme:dark;
-  }
-}
-:root[data-theme="dark"]{
-  --paper:#101516; --surface:#182022; --ink:#E2E6E0; --muted:#98A29D; --line:#2C3638;
-  --accent:#86AEDB; --seal:#E27563; --on-era:#0E1314;
-  --e-xianqin:#D39D60; --e-qinhan:#E2755E; --e-weijin:#D27C98; --e-suitang:#D8B44A;
-  --e-songyuan:#62BB97; --e-mingqing:#76A2DC; --e-modern:#98A2C0;
-  color-scheme:dark;
-}
-*{box-sizing:border-box}
-html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.7 var(--f-sans);
-  -webkit-font-smoothing:antialiased}
-.wrap{margin:0;
-  padding-left:max(clamp(16px,2.5vw,40px),env(safe-area-inset-left,0px));padding-right:max(clamp(16px,2.5vw,40px),env(safe-area-inset-right,0px))}
-h1,h2,h3{text-wrap:balance;margin:0}
-button{font:inherit;color:inherit}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>华夏历史长卷</title>
+  <meta name="description" content="从夏朝到今天：按真实年份比例排布的中国历代政权时间轴与疆域演变地图。">
 
-/* —— 卷首 —— */
-header.top{padding-block:36px 20px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px 40px;justify-content:space-between}
-.title{display:flex;align-items:center;gap:18px}
-.seal{width:58px;height:58px;flex:none;border:2px solid var(--seal);border-radius:6px;color:var(--seal);
-  display:grid;grid-template-columns:1fr 1fr;place-items:center;font:900 19px/1 var(--f-serif);padding:5px}
-h1{font:400 clamp(40px,6vw,64px)/1 var(--f-brush);letter-spacing:.04em}
-.sub{color:var(--muted);margin-top:8px;font-size:14px}
-.facts{display:flex;gap:28px;flex-wrap:wrap}
-.fact b{display:block;font:900 26px/1.1 var(--f-serif);font-variant-numeric:tabular-nums}
-.fact span{font-size:12px;color:var(--muted);letter-spacing:.08em}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;900&display=swap">
 
-/* —— 全景缩略条 —— */
-.mini{position:relative;height:30px;border-radius:4px;overflow:hidden;display:flex;cursor:pointer;
-  border:1px solid var(--line);touch-action:none;user-select:none}
-.mini i{display:block;height:100%;background:color-mix(in srgb,var(--c) 30%,var(--surface));
-  border-right:1px solid var(--surface);font:500 11px/30px var(--f-sans);font-style:normal;
-  color:var(--ink);text-align:center;overflow:hidden;white-space:nowrap}
-.mini .view{position:absolute;top:0;bottom:0;border:2px solid var(--ink);border-radius:3px;
-  background:color-mix(in srgb,var(--ink) 8%,transparent);pointer-events:none}
-.mini-cap{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums}
-
-/* —— 工具条 —— */
-.tools{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;padding-block:16px 10px}
-.eras{display:flex;flex-wrap:wrap;gap:6px}
-.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:3px 12px 3px 10px;
-  font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
-.chip::before{content:"";width:9px;height:9px;border-radius:2px;background:var(--c)}
-.chip:hover{border-color:var(--c)}
-.spacer{flex:1}
-.zoom{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
-.zoom button{width:30px;height:30px;border:1px solid var(--line);background:var(--surface);border-radius:6px;cursor:pointer;font-size:17px;line-height:1}
-.zoom input{width:120px;accent-color:var(--accent)}
-.search{position:relative}
-.search input{width:220px;max-width:100%;padding:6px 12px;border:1px solid var(--line);border-radius:6px;
-  background:var(--surface);color:var(--ink);font:inherit;font-size:14px}
-.search small{position:absolute;left:0;top:100%;font-size:12px;color:var(--muted);white-space:nowrap}
-
-/* —— 长卷 —— */
-.scroll{overflow-x:auto;overflow-y:hidden;background:var(--surface);border:1px solid var(--line);border-radius:8px;
-  margin-top:14px;cursor:grab;scrollbar-color:var(--line) transparent}
-.scroll.drag{cursor:grabbing}
-.canvas{position:relative}
-.band{position:absolute;top:0;bottom:0;background:color-mix(in srgb,var(--c) 6%,transparent);border-left:1px dashed color-mix(in srgb,var(--c) 45%,transparent)}
-.band span{position:sticky;left:8px;display:inline-block;margin:6px 8px;font:600 13px/1 var(--f-serif);color:var(--c);letter-spacing:.1em;white-space:nowrap}
-.pin{position:absolute;height:20px;display:flex;align-items:center;gap:4px;font-size:12px;white-space:nowrap;
-  color:var(--muted);background:none;border:0;padding:0 2px;cursor:pointer}
-.pin::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--seal);flex:none;margin-left:-5.5px}
-.pin:hover,.pin.on{color:var(--seal)}
-.pinline{position:absolute;width:1px;background:color-mix(in srgb,var(--seal) 35%,transparent);pointer-events:none}
-.lane-label{position:sticky;left:0;z-index:3;width:0;height:0}
-.blk{position:absolute;height:calc(var(--lane-h) - 8px);border-radius:4px;cursor:pointer;
-  background:color-mix(in srgb,var(--c) 22%,var(--surface));border:1px solid color-mix(in srgb,var(--c) 60%,transparent);
-  display:flex;flex-direction:column;justify-content:center;padding:0 8px;overflow:hidden;text-align:left;
-  transition:background .15s,opacity .15s}
-.blk b{font:600 15px/1.15 var(--f-serif);white-space:nowrap}
-.blk small{font-size:11px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
-.blk.major b{font-weight:900;font-size:17px}
-.blk.tiny{padding:0}
-.blk.tiny b,.blk.tiny small,.blk.narrow small{display:none}
-.blk:hover{background:color-mix(in srgb,var(--c) 38%,var(--surface))}
-.blk.on{background:var(--c);border-color:var(--c);color:var(--on-era);z-index:2}
-.blk.on small{color:var(--on-era);opacity:.85}
-.blk.dim{opacity:.18}
-.blk.hit{box-shadow:0 0 0 2px var(--seal)}
-.axis{position:absolute;left:0;right:0;border-top:1px solid var(--line)}
-.tick{position:absolute;top:0;font-size:11px;color:var(--muted);transform:translateX(-50%);padding-top:5px;white-space:nowrap;font-variant-numeric:tabular-nums}
-.tick::before{content:"";position:absolute;left:50%;top:0;height:5px;border-left:1px solid var(--line)}
-.tick.zero{color:var(--ink);font-weight:700}
-.grid{position:absolute;width:1px;background:color-mix(in srgb,var(--line) 55%,transparent);pointer-events:none}
-.hint{font-size:12px;color:var(--muted);margin-top:6px}
-
-/* —— 详情 —— */
-.detail{margin-top:28px;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:28px 48px;
-  padding-block:28px;border-top:3px solid var(--c);}
-.detail > .d-more{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:28px 48px}
-@media (min-width:1400px){
-  .detail{grid-template-columns:minmax(0,4fr) minmax(0,5fr) minmax(0,4fr)}
-  .detail > .d-more{grid-column:auto;display:flex;flex-direction:column}
-}
-ul.ach{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
-ul.ach li{padding-left:18px;position:relative}
-ul.ach li::before{content:"";position:absolute;left:2px;top:.72em;width:7px;height:7px;background:var(--c);transform:rotate(45deg)}
-.fall{margin:0;padding:12px 16px;background:color-mix(in srgb,var(--c) 9%,var(--surface));border-radius:6px;border:1px solid color-mix(in srgb,var(--c) 30%,transparent)}
-.d-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
-.d-era{font-size:12px;letter-spacing:.14em;color:var(--c);font-weight:700}
-.d-name{font:900 clamp(38px,5vw,56px)/1.05 var(--f-serif)}
-.d-years{font-size:17px;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:6px}
-.d-sum{margin:16px 0 18px;max-width:34em}
-dl.kv{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;margin:0}
-dl.kv dt{color:var(--muted);font-size:13px;padding-top:1px}
-dl.kv dd{margin:0}
-.people{display:flex;flex-wrap:wrap;gap:6px}
-.people span{border:1px solid var(--line);border-radius:4px;padding:0 8px;font-size:13px;background:var(--surface)}
-.nav{display:flex;gap:10px;margin-top:22px}
-.nav button{flex:1;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:8px 12px;cursor:pointer;text-align:left;font-size:13px;color:var(--muted)}
-.nav button b{display:block;color:var(--ink);font:600 16px/1.3 var(--f-serif)}
-.nav button:last-child{text-align:right}
-.nav button:disabled{opacity:.4;cursor:default}
-.ev-title{font:600 13px/1 var(--f-sans);letter-spacing:.14em;color:var(--muted);margin-bottom:12px}
-ol.events{list-style:none;margin:0;padding:0;position:relative}
-ol.events::before{content:"";position:absolute;left:84px;top:8px;bottom:8px;border-left:1px solid var(--line)}
-ol.events li{display:grid;grid-template-columns:76px 1fr;gap:26px;padding:7px 0;position:relative}
-ol.events li::before{content:"";position:absolute;left:80px;top:15px;width:9px;height:9px;border-radius:50%;
-  background:var(--surface);border:2px solid var(--c)}
-ol.events time{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums;font-size:14px;white-space:nowrap}
-
-/* —— 一览 —— */
-section.list{padding-block:20px 60px}
-section.list h2{font:900 26px/1.2 var(--f-serif);margin-bottom:4px}
-section.list > p{color:var(--muted);margin:0 0 18px}
-.era-grp{margin-top:22px}
-.era-grp h3{font:600 15px/1 var(--f-serif);color:var(--c);letter-spacing:.12em;padding-bottom:8px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}
-.era-grp h3 span{font:400 12px var(--f-sans);color:var(--muted);letter-spacing:0;font-variant-numeric:tabular-nums}
-.row{display:grid;grid-template-columns:8em 11em 4.5em minmax(0,1fr);gap:12px;align-items:center;width:100%;
-  padding:7px 4px;border:0;border-bottom:1px solid color-mix(in srgb,var(--line) 60%,transparent);background:none;cursor:pointer;text-align:left}
-.row:hover{background:color-mix(in srgb,var(--c) 8%,transparent)}
-.row.on{background:color-mix(in srgb,var(--c) 14%,transparent)}
-.row b{font:600 15px var(--f-serif)}
-.row .yr,.row .dur{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
-.row .dur{text-align:right}
-.row .bar{height:8px;border-radius:2px;background:var(--c);opacity:.75}
-footer{color:var(--muted);font-size:12px;padding-block:0 40px}
-@media (max-width:760px){
-  .detail{grid-template-columns:minmax(0,1fr)}
-  .row{grid-template-columns:6.5em 1fr 3.5em}
-  .row .bar{display:none}
-  .search input{width:100%}
-  .search{flex:1 1 100%}
-  .spacer{display:none}
-}
-@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
-</style>
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/timeline.css">
+  <link rel="stylesheet" href="css/detail.css">
+  <link rel="stylesheet" href="css/map.css">
+  <link rel="stylesheet" href="css/list.css">
 </head>
 <body>
 <div class="wrap">
+
+  <!-- 卷首 -->
   <header class="top">
     <div class="title">
       <div class="seal" aria-hidden="true"><span>华</span><span>夏</span><span>长</span><span>卷</span></div>
@@ -193,9 +32,11 @@ footer{color:var(--muted);font-size:12px;padding-block:0 40px}
     <div class="facts" id="facts"></div>
   </header>
 
+  <!-- 全景缩略条 -->
   <div class="mini" id="mini" role="slider" aria-label="全景缩略条，点击或拖动以跳转" tabindex="0"></div>
   <div class="mini-cap"><span>约前2070年</span><span>全景 · 方框为当前视野</span><span>今</span></div>
 
+  <!-- 工具条 -->
   <div class="tools">
     <div class="eras" id="eras"></div>
     <div class="spacer"></div>
@@ -211,465 +52,63 @@ footer{color:var(--muted);font-size:12px;padding-block:0 40px}
     </div>
   </div>
 
-  <div class="scroll" id="scroll"><div class="canvas" id="canvas"></div></div>
-  <div class="hint">拖动长卷可左右移动；点击色块查看详情；键盘 ← → 切换相邻朝代。</div>
+  <!-- 长卷时间轴 -->
+  <div class="scroll" id="scroll"><div class="canvas"></div></div>
+  <div class="hint">
+    拖动长卷可左右移动；点击色块查看详情；键盘 ← → 切换相邻朝代；Ctrl/⌘ + 滚轮缩放。
+    <span class="unity-key">底部色带：
+      <span><i class="unity-unified"></i>大一统</span>
+      <span><i class="unity-loose"></i>统一·地方割据</span>
+      <span><i class="unity-divided"></i>分裂并立</span>
+      <span><i class="unity-royal"></i>王朝共主</span>
+    </span>
+  </div>
 
+  <!-- 朝代详情 -->
   <article class="detail" id="detail"></article>
 
+  <!-- 疆域演变地图 -->
+  <section class="map-sec loading" id="map">
+    <header>
+      <h2>疆域演变</h2>
+      <p>从夏朝到清末，27 个时间节点。拖动滑块或点击播放，地图会与上方选中的朝代同步。</p>
+    </header>
+    <div class="map-body">
+      <div class="map-stage">
+        <svg role="img" aria-label="历代疆域示意图"></svg>
+        <div class="map-modern" hidden>
+          1912 年以后的中国疆域不在此绘制，请查阅自然资源部
+          <a href="https://bzdt.ch.mnr.gov.cn/" target="_blank" rel="noopener">标准地图服务</a>。
+        </div>
+      </div>
+      <aside class="map-side" aria-live="polite"></aside>
+    </div>
+    <div class="map-ctrl">
+      <button id="map-play">▶ 播放演变</button>
+      <button id="map-prev" aria-label="上一个时间节点">←</button>
+      <div class="map-track">
+        <input id="map-range" type="range" min="0" max="0" value="0" aria-label="地图年份">
+        <div class="map-dots"></div>
+      </div>
+      <button id="map-next" aria-label="下一个时间节点">→</button>
+    </div>
+    <p class="map-src">
+      示意图，非标准地图，疆界为近似范围。边界数据改编自
+      <a href="https://github.com/aourednik/historical-basemaps" target="_blank" rel="noopener">historical-basemaps</a>（GPL-3.0），
+      政权归属与名称已按史实逐帧校订。
+    </p>
+  </section>
+
+  <!-- 历代一览 -->
   <section class="list">
     <h2>历代一览</h2>
     <p>色条长度代表政权存续年数。点击任一行在上方查看详情。</p>
     <div id="list"></div>
   </section>
+
   <footer>年代采用通行说法，上古年代依据"夏商周断代工程"等研究，均为约数；部分政权起止年存在不同观点。</footer>
 </div>
 
-<script src="data.js"></script>
-<script>
-const ERAS=[
-  {id:'xianqin',name:'先秦',s:-2070,e:-221},
-  {id:'qinhan',name:'秦汉',s:-221,e:220},
-  {id:'weijin',name:'魏晋南北朝',s:220,e:581},
-  {id:'suitang',name:'隋唐五代',s:581,e:960},
-  {id:'songyuan',name:'宋元',s:960,e:1368},
-  {id:'mingqing',name:'明清',s:1368,e:1912},
-  {id:'modern',name:'近现代',s:1912,e:2026}
-];
-const NOW=2026;
-// lane: 0 主线, 1-3 并存政权；ds: 绘制起点（用于与前朝重叠的统一王朝）
-const D=[
- {id:'xia',n:'夏',s:-2070,e:-1600,era:'xianqin',lane:0,major:1,approx:1,f:'禹、启',c:'阳城、斟鄩等（今河南登封、偃师一带，传说）',
-  sum:'史书记载的第一个世袭制王朝，"公天下"变为"家天下"。考古上多与河南偃师二里头文化相联系，其确切面貌仍在研究中。',
-  ev:[[-2070,'禹传位于子启，世袭制取代禅让制'],[-1900,'太康失国，后羿、寒浞代夏（约）'],[-1800,'少康中兴（约）'],[-1600,'夏桀暴虐，商汤于鸣条之战灭夏']],
-  p:['大禹','启','少康','桀']},
- {id:'shang',n:'商',s:-1600,e:-1046,era:'xianqin',lane:0,major:1,approx:1,f:'商汤',c:'亳，后迁殷（今河南安阳）',
-  sum:'中国第一个有同时期文字记载的王朝。殷墟甲骨文是成熟的汉字体系，青铜铸造达到高峰。',
-  ev:[[-1600,'商汤灭夏，建立商朝'],[-1300,'盘庚迁殷，此后商又称"殷"'],[-1250,'武丁在位，商朝鼎盛，妇好领兵出征'],[-1200,'甲骨文大量使用，司母戊鼎（后母戊鼎）铸成'],[-1046,'牧野之战，周武王灭商']],
-  p:['商汤','伊尹','盘庚','武丁','妇好','纣王']},
- {id:'xizhou',n:'西周',s:-1046,e:-771,era:'xianqin',lane:0,major:1,f:'周武王姬发',c:'镐京（今陕西西安）',
-  sum:'实行分封制和宗法制，周公"制礼作乐"，奠定了中国礼乐文明的基础。公元前841年起中国历史有了确切的逐年纪年。',
-  ev:[[-1046,'牧野之战，周武王灭商建周'],[-1042,'周公摄政，平定三监之乱，营建洛邑'],[-841,'国人暴动，周厉王出奔，"共和行政"，中国确切纪年由此开始'],[-771,'犬戎攻破镐京，周幽王被杀，西周灭亡']],
-  p:['周文王','周武王','周公旦','姜尚','周幽王']},
- {id:'chunqiu',n:'春秋',s:-770,e:-476,era:'xianqin',lane:0,major:1,f:'周平王东迁（东周前期）',c:'洛邑（今河南洛阳）',
-  sum:'周王室衰微，诸侯争霸，"春秋五霸"相继称雄。孔子、老子等开创儒家、道家，思想文化空前活跃。得名于鲁国编年史《春秋》。',
-  ev:[[-770,'周平王东迁洛邑，东周开始'],[-651,'齐桓公葵丘会盟，成为第一位霸主'],[-632,'城濮之战，晋文公称霸'],[-551,'孔子诞生'],[-494,'吴王夫差败越，越王勾践卧薪尝胆'],[-473,'越灭吴']],
-  p:['齐桓公','管仲','晋文公','楚庄王','孔子','老子','孙武']},
- {id:'zhanguo',n:'战国',s:-475,e:-221,era:'xianqin',lane:0,major:1,f:'（东周后期）',c:'各国分立',
-  sum:'齐、楚、燕、韩、赵、魏、秦"七雄"并立，各国变法图强，兼并战争激烈；诸子百家争鸣，铁器与牛耕推广。',
-  ev:[[-403,'韩、赵、魏三家分晋，被周王承认为诸侯'],[-356,'秦国商鞅变法'],[-307,'赵武灵王胡服骑射'],[-278,'屈原投汨罗江'],[-260,'长平之战，秦大败赵'],[-256,'秦灭东周'],[-230,'秦灭韩，开始统一战争']],
-  p:['商鞅','孟子','庄子','荀子','韩非','屈原','白起','廉颇']},
-
- {id:'qin',n:'秦',s:-221,e:-207,era:'qinhan',lane:0,major:1,f:'秦始皇嬴政',c:'咸阳（今陕西咸阳）',
-  sum:'中国第一个大一统中央集权王朝。创立皇帝制度和郡县制，统一文字、货币、度量衡，影响此后两千年。',
-  ev:[[-221,'秦灭齐，统一六国，嬴政称"始皇帝"，推行郡县制'],[-221,'统一文字（小篆）、货币、度量衡、车轨'],[-214,'修筑长城，开凿灵渠'],[-213,'焚书，次年坑儒'],[-210,'秦始皇病逝于沙丘'],[-209,'陈胜、吴广大泽乡起义'],[-207,'秦王子婴降刘邦']],
-  p:['秦始皇','李斯','蒙恬','赵高','陈胜','项羽']},
- {id:'xihan',n:'西汉',s:-202,e:8,era:'qinhan',lane:0,major:1,f:'汉高祖刘邦',c:'长安（今陕西西安）',
-  sum:'休养生息后国力鼎盛。汉武帝时开拓疆域、独尊儒术，张骞凿空西域，丝绸之路由此兴起。"汉族""汉字"之名皆源于汉朝。',
-  ev:[[-202,'垓下之战，项羽败亡，刘邦称帝'],[-180,'文景之治开始（约）'],[-154,'七国之乱'],[-138,'张骞出使西域'],[-134,'董仲舒对策，"罢黜百家，独尊儒术"'],[-119,'漠北之战，卫青、霍去病大破匈奴'],[-91,'司马迁完成《史记》（约）'],[-60,'设西域都护府']],
-  p:['刘邦','萧何','韩信','汉武帝','卫青','霍去病','张骞','司马迁','苏武']},
- {id:'xin',n:'新',s:9,e:23,era:'qinhan',lane:0,f:'王莽',c:'常安（即长安）',
-  sum:'外戚王莽代汉建立的短暂王朝。其复古改制脱离实际，引发社会动荡，最终在绿林、赤眉起义中覆灭。',
-  ev:[[9,'王莽称帝，改国号"新"'],[9,'推行王田制、币制改革等新政'],[17,'绿林起义爆发，次年赤眉起义'],[23,'昆阳之战，刘秀大破新军；王莽被杀']],
-  p:['王莽','刘秀']},
- {id:'donghan',n:'东汉',s:25,e:220,era:'qinhan',lane:0,major:1,f:'汉光武帝刘秀',c:'洛阳',
-  sum:'刘秀重建汉室。科技文化成就突出：造纸术改进、地动仪发明、佛教传入。后期外戚宦官专权，黄巾起义后陷入军阀割据。',
-  ev:[[25,'刘秀称帝，定都洛阳'],[68,'白马寺建成，佛教传入中原'],[73,'班超出使西域'],[105,'蔡伦改进造纸术'],[132,'张衡发明候风地动仪'],[184,'黄巾起义'],[208,'赤壁之战，奠定三分格局'],[220,'曹丕代汉，东汉灭亡']],
-  p:['刘秀','班超','班固','蔡伦','张衡','张仲景','华佗','曹操']},
-
- {id:'wei',n:'曹魏',s:220,e:266,era:'weijin',lane:0,major:1,f:'魏文帝曹丕',c:'洛阳',
-  sum:'三国中实力最强，据有北方。创立九品中正制，屯田恢复生产。后期大权落入司马氏之手。',
-  ev:[[220,'曹丕受汉献帝禅让称帝'],[220,'推行九品中正制'],[249,'高平陵之变，司马懿掌权'],[263,'魏灭蜀汉'],[266,'司马炎代魏建晋']],
-  p:['曹丕','曹植','司马懿','邓艾']},
- {id:'shu',n:'蜀汉',s:221,e:263,era:'weijin',lane:1,f:'汉昭烈帝刘备',c:'成都',
-  sum:'刘备以汉室宗亲身份在益州称帝，诸葛亮辅政，治蜀严明，多次北伐曹魏。',
-  ev:[[221,'刘备在成都称帝'],[222,'夷陵之战，刘备败于陆逊'],[225,'诸葛亮南征'],[228,'诸葛亮开始北伐（至234年）'],[234,'诸葛亮病逝五丈原'],[263,'刘禅降魏']],
-  p:['刘备','诸葛亮','关羽','张飞','赵云','姜维']},
- {id:'wu',n:'孙吴',s:222,e:280,era:'weijin',lane:2,f:'吴大帝孙权',c:'建业（今江苏南京）',
-  sum:'孙权据有江东，开发江南，发展造船与航海。三国中存续最久。',
-  ev:[[222,'孙权称吴王，229年称帝'],[230,'卫温率船队抵达夷洲（今台湾）'],[252,'孙权去世'],[280,'西晋灭吴，三国归晋']],
-  p:['孙权','周瑜','鲁肃','陆逊','吕蒙']},
- {id:'xijin',n:'西晋',s:266,e:316,era:'weijin',lane:0,major:1,f:'晋武帝司马炎',c:'洛阳',
-  sum:'结束三国分裂，短暂统一。但宗室内斗引发八王之乱，北方各族乘机起兵，西晋很快覆灭。',
-  ev:[[266,'司马炎代魏建晋'],[280,'灭吴，统一全国'],[291,'八王之乱开始（至306年）'],[311,'永嘉之乱，洛阳陷落'],[316,'长安陷落，西晋灭亡']],
-  p:['司马炎','陆机','左思','裴秀']},
- {id:'dongjin',n:'东晋',s:317,e:420,era:'weijin',lane:0,major:1,f:'晋元帝司马睿',c:'建康（今江苏南京）',
-  sum:'晋室南渡，北方士族大量南迁，推动了江南开发。门阀政治盛行，书法、绘画、田园诗成就卓著。',
-  ev:[[317,'司马睿在建康建立东晋'],[353,'王羲之写成《兰亭集序》'],[383,'淝水之战，以少胜多击败前秦'],[405,'陶渊明辞官归隐'],[420,'刘裕代晋建宋']],
-  p:['王导','谢安','谢玄','王羲之','顾恺之','陶渊明','祖逖']},
- {id:'shiliuguo',n:'十六国',s:304,e:439,era:'weijin',lane:1,f:'刘渊、李雄等',c:'北方与西南各地',
-  sum:'匈奴、羯、鲜卑、氐、羌等族及汉族在北方和西南先后建立二十余个政权，史称"五胡十六国"。前秦苻坚曾一度统一北方。',
-  ev:[[304,'刘渊建汉（前赵），李雄建成汉'],[319,'石勒建后赵'],[351,'苻健建前秦'],[376,'前秦统一北方'],[383,'淝水之战，前秦瓦解'],[439,'北魏灭北凉，统一北方']],
-  p:['刘渊','石勒','苻坚','王猛','慕容垂']},
- {id:'nsong',n:'南朝宋',s:420,e:479,era:'weijin',lane:0,f:'宋武帝刘裕',c:'建康',
-  sum:'南朝第一个政权，又称"刘宋"。宋文帝时出现"元嘉之治"。',
-  ev:[[420,'刘裕代晋称帝'],[424,'宋文帝即位，元嘉之治'],[450,'元嘉北伐失败'],[479,'萧道成代宋']],
-  p:['刘裕','宋文帝','祖冲之','谢灵运','范晔']},
- {id:'nqi',n:'南齐',s:479,e:502,era:'weijin',lane:0,f:'齐高帝萧道成',c:'建康',
-  sum:'南朝第二个政权，历时仅二十余年。祖冲之将圆周率推算到小数点后七位。',
-  ev:[[479,'萧道成代宋建齐'],[480,'祖冲之推算圆周率在3.1415926与3.1415927之间（约）'],[502,'萧衍代齐建梁']],
-  p:['萧道成','祖冲之']},
- {id:'nliang',n:'南梁',s:502,e:557,era:'weijin',lane:0,f:'梁武帝萧衍',c:'建康',
-  sum:'梁武帝在位近五十年，崇信佛教，文化繁荣；晚年爆发侯景之乱，江南遭受重创。',
-  ev:[[502,'萧衍建梁'],[527,'梁武帝首次舍身同泰寺'],[531,'昭明太子编成《文选》前后'],[548,'侯景之乱（至552年）'],[557,'陈霸先代梁']],
-  p:['梁武帝','昭明太子萧统','刘勰','侯景']},
- {id:'nchen',n:'南陈',s:557,e:589,era:'weijin',lane:0,f:'陈武帝陈霸先',c:'建康',
-  sum:'南朝最后一个政权，疆域最小。陈后主耽于享乐，被隋所灭，南北朝结束。',
-  ev:[[557,'陈霸先建陈'],[582,'陈后主即位'],[589,'隋军攻入建康，陈亡']],
-  p:['陈霸先','陈后主']},
- {id:'beiwei',n:'北魏',s:386,e:534,era:'weijin',lane:2,f:'道武帝拓跋珪',c:'平城（今山西大同），后迁洛阳',
-  sum:'鲜卑拓跋部建立，统一北方。孝文帝迁都洛阳，推行汉化改革，促进民族交融。开凿云冈、龙门石窟。',
-  ev:[[386,'拓跋珪建立北魏'],[439,'太武帝统一北方，与南朝对峙'],[460,'开凿云冈石窟'],[485,'推行均田制'],[494,'孝文帝迁都洛阳，开凿龙门石窟'],[534,'分裂为东魏、西魏']],
-  p:['拓跋珪','太武帝','冯太后','孝文帝','郦道元','贾思勰']},
- {id:'dongwei',n:'东魏',s:534,e:550,era:'weijin',lane:2,f:'孝静帝（高欢掌权）',c:'邺城',
-  sum:'北魏分裂后的东部政权，实权在高欢手中。',
-  ev:[[534,'高欢立孝静帝，迁都邺城'],[550,'高洋代东魏建北齐']],p:['高欢']},
- {id:'beiqi',n:'北齐',s:550,e:577,era:'weijin',lane:2,f:'文宣帝高洋',c:'邺城',
-  sum:'承接东魏，经济富庶，但政治混乱，被北周所灭。',
-  ev:[[550,'高洋建北齐'],[564,'兰陵王"入阵曲"故事流传'],[577,'北周灭北齐，统一北方']],p:['高洋','兰陵王高长恭','斛律光']},
- {id:'xiwei',n:'西魏',s:535,e:557,era:'weijin',lane:1,f:'文帝元宝炬（宇文泰掌权）',c:'长安',
-  sum:'北魏分裂后的西部政权，宇文泰创立府兵制，为隋唐军制奠基。',
-  ev:[[535,'宇文泰立元宝炬，定都长安'],[550,'府兵制基本形成'],[557,'宇文觉代西魏建北周']],p:['宇文泰','苏绰']},
- {id:'beizhou',n:'北周',s:557,e:581,era:'weijin',lane:1,f:'孝闵帝宇文觉',c:'长安',
-  sum:'周武帝灭北齐统一北方，为隋朝统一全国准备了条件。',
-  ev:[[557,'宇文觉建北周'],[574,'周武帝禁佛道'],[577,'灭北齐，统一北方'],[581,'杨坚代周建隋']],p:['周武帝宇文邕','杨坚']},
-
- {id:'sui',n:'隋',s:581,e:618,ds:589,era:'suitang',lane:0,major:1,f:'隋文帝杨坚',c:'大兴城（今陕西西安）',
-  sum:'结束近三百年的分裂。创立三省六部制和科举制，开凿大运河，许多制度为唐朝继承。隋炀帝滥用民力，王朝二世而亡。（581年建立，589年统一全国）',
-  ev:[[581,'杨坚代周建隋'],[589,'灭陈，统一南北'],[595,'李春主持修建赵州桥（约）'],[605,'开凿大运河；设进士科，科举制开始（约）'],[612,'三征高句丽（至614年）'],[618,'隋炀帝在江都被杀，隋亡']],
-  p:['隋文帝','隋炀帝','高颎','李春']},
- {id:'tang',n:'唐',s:618,e:907,era:'suitang',lane:0,major:1,f:'唐高祖李渊',c:'长安（今陕西西安）',
-  sum:'中国古代最强盛的王朝之一。政治开明，国际交流频繁，诗歌、书法、绘画全面繁荣，长安是当时世界性大都市。安史之乱后由盛转衰。',
-  ev:[[618,'李渊称帝建唐'],[626,'玄武门之变，李世民继位'],[627,'贞观之治（至649年）'],[641,'文成公主入吐蕃'],[645,'玄奘从天竺取经归来'],[690,'武则天称帝，改国号周（至705年）'],[713,'开元盛世（至741年）'],[753,'鉴真东渡日本成功'],[755,'安史之乱（至763年）'],[875,'黄巢起义'],[907,'朱温篡唐，唐亡']],
-  p:['李世民','魏征','武则天','唐玄宗','李白','杜甫','白居易','玄奘','鉴真','颜真卿']},
- {id:'houliang',n:'后梁',s:907,e:923,era:'suitang',lane:0,f:'梁太祖朱温',c:'开封',
-  sum:'五代第一个政权，朱温篡唐建立，与晋王李存勖长期交战。',ev:[[907,'朱温称帝'],[923,'后唐灭后梁']],p:['朱温']},
- {id:'houtang',n:'后唐',s:923,e:936,era:'suitang',lane:0,f:'唐庄宗李存勖',c:'洛阳',
-  sum:'沙陀人李存勖建立，五代中疆域最大。',ev:[[923,'李存勖称帝，灭后梁'],[926,'兴教门之变，庄宗被杀'],[936,'石敬瑭借契丹兵灭后唐']],p:['李存勖','李嗣源']},
- {id:'houjin',n:'后晋',s:936,e:947,era:'suitang',lane:0,f:'晋高祖石敬瑭',c:'开封',
-  sum:'石敬瑭向契丹称臣，割让燕云十六州，使中原北方门户洞开，影响宋代数百年。',ev:[[936,'石敬瑭称帝'],[938,'正式割让燕云十六州给契丹'],[947,'契丹攻入开封，后晋亡']],p:['石敬瑭']},
- {id:'houhan',n:'后汉',s:947,e:951,era:'suitang',lane:0,f:'汉高祖刘知远',c:'开封',
-  sum:'五代中最短命的政权，仅存四年。',ev:[[947,'刘知远称帝'],[951,'郭威代汉']],p:['刘知远']},
- {id:'houzhou',n:'后周',s:951,e:960,era:'suitang',lane:0,f:'周太祖郭威',c:'开封',
-  sum:'周世宗柴荣锐意改革，南征北战，为北宋统一奠定基础。',ev:[[951,'郭威称帝'],[954,'柴荣即位，整顿军政'],[959,'北伐收复三关，柴荣病逝'],[960,'赵匡胤陈桥兵变，后周亡']],p:['郭威','柴荣','赵匡胤']},
- {id:'shiguo',n:'十国',s:902,e:979,era:'suitang',lane:1,f:'杨行密、钱镠、王建等',c:'南方各地及北汉（太原）',
-  sum:'五代时期南方及河东先后存在的吴、南唐、吴越、前蜀、后蜀、闽、楚、南汉、南平、北汉十个割据政权。南唐文化尤盛。',
-  ev:[[902,'杨行密受封吴王，吴国建立'],[907,'钱镠建吴越，王建建前蜀'],[937,'李昪建南唐'],[961,'李煜即位为南唐后主'],[975,'宋灭南唐'],[978,'吴越纳土归宋'],[979,'宋灭北汉，十国结束']],
-  p:['钱镠','李煜','冯延巳','孟昶']},
-
- {id:'beisong',n:'北宋',s:960,e:1127,era:'songyuan',lane:0,major:1,f:'宋太祖赵匡胤',c:'东京开封府',
-  sum:'重文抑武，经济、科技、文化高度发达。活字印刷、指南针、火药得到广泛应用，城市商业繁荣，出现世界最早的纸币"交子"。',
-  ev:[[960,'陈桥兵变，赵匡胤建宋'],[961,'杯酒释兵权'],[1005,'与辽订立澶渊之盟'],[1023,'官府发行交子'],[1043,'范仲淹庆历新政'],[1045,'毕昇发明活字印刷（约）'],[1069,'王安石变法'],[1084,'司马光完成《资治通鉴》'],[1127,'靖康之变，金军掳走徽、钦二帝，北宋亡']],
-  p:['赵匡胤','范仲淹','欧阳修','王安石','司马光','苏轼','沈括','包拯','张择端']},
- {id:'nansong',n:'南宋',s:1127,e:1279,era:'songyuan',lane:0,major:1,f:'宋高宗赵构',c:'临安（今浙江杭州）',
-  sum:'偏安江南，与金、蒙古长期对峙。经济重心完成南移，海外贸易兴盛，理学集大成。',
-  ev:[[1127,'赵构在应天府即位'],[1140,'岳飞郾城大捷'],[1141,'宋金绍兴和议，次年岳飞遇害'],[1175,'朱熹与陆九渊鹅湖之会'],[1276,'元军攻入临安'],[1279,'崖山海战，南宋灭亡']],
-  p:['岳飞','韩世忠','李清照','陆游','辛弃疾','朱熹','文天祥']},
- {id:'liao',n:'辽',s:916,e:1125,era:'songyuan',lane:2,f:'辽太祖耶律阿保机',c:'上京临潢府（今内蒙古巴林左旗）',
-  sum:'契丹族建立，控制北方草原和燕云地区，实行"因俗而治"的南北面官制度，与北宋长期和平共处。',
-  ev:[[916,'耶律阿保机称帝，国号契丹'],[920,'创制契丹大字'],[938,'获得燕云十六州'],[947,'改国号为"辽"'],[1005,'与北宋订立澶渊之盟'],[1125,'被金所灭']],
-  p:['耶律阿保机','萧太后（萧绰）','耶律大石']},
- {id:'xixia',n:'西夏',s:1038,e:1227,era:'songyuan',lane:1,f:'夏景宗李元昊',c:'兴庆府（今宁夏银川）',
-  sum:'党项族建立，占据河西走廊，创制西夏文，与宋、辽、金鼎立。',
-  ev:[[1036,'创制西夏文字'],[1038,'李元昊称帝'],[1044,'宋夏庆历和议'],[1227,'被蒙古所灭']],
-  p:['李元昊']},
- {id:'jin',n:'金',s:1115,e:1234,era:'songyuan',lane:3,f:'金太祖完颜阿骨打',c:'会宁府，后迁中都（今北京）',
-  sum:'女真族建立，先后灭辽和北宋，与南宋以淮河—大散关为界对峙。',
-  ev:[[1115,'完颜阿骨打称帝建金'],[1125,'灭辽'],[1127,'灭北宋'],[1153,'迁都中都（今北京）'],[1234,'被蒙古与南宋联军所灭']],
-  p:['完颜阿骨打','完颜宗弼（金兀术）','金世宗']},
- {id:'menggu',n:'大蒙古国',s:1206,e:1271,era:'songyuan',lane:2,f:'成吉思汗铁木真',c:'哈拉和林',
-  sum:'成吉思汗统一蒙古各部，建立横跨欧亚的大帝国，先后灭西夏、金。',
-  ev:[[1206,'铁木真称成吉思汗'],[1219,'第一次西征'],[1227,'灭西夏，成吉思汗去世'],[1234,'灭金'],[1260,'忽必烈即汗位']],
-  p:['成吉思汗','窝阔台','拖雷','耶律楚材']},
- {id:'yuan',n:'元',s:1271,e:1368,ds:1279,era:'songyuan',lane:0,major:1,f:'元世祖忽必烈',c:'大都（今北京）',
-  sum:'蒙古族建立的统一王朝，疆域空前辽阔。创立行省制度，设宣政院管辖西藏，设澎湖巡检司。元曲兴盛，中外交通发达。（1271年定国号，1279年灭南宋）',
-  ev:[[1271,'忽必烈定国号"大元"'],[1275,'马可·波罗来到元朝（约）'],[1279,'灭南宋，统一全国'],[1280,'郭守敬等编成《授时历》'],[1287,'黄道婆改进棉纺技术（约）'],[1351,'红巾军起义'],[1368,'明军攻占大都，元室北走']],
-  p:['忽必烈','郭守敬','关汉卿','王实甫','黄道婆','赵孟頫']},
-
- {id:'ming',n:'明',s:1368,e:1644,era:'mingqing',lane:0,major:1,f:'明太祖朱元璋',c:'南京，后迁北京',
-  sum:'汉族建立的最后一个统一王朝。废丞相，强化君主集权；郑和七下西洋；修筑今日所见的长城；后期商品经济活跃，西学东渐。',
-  ev:[[1368,'朱元璋在南京称帝'],[1380,'废除丞相制度'],[1405,'郑和第一次下西洋（至1433年共七次）'],[1421,'迁都北京'],[1449,'土木之变，明英宗被俘'],[1573,'张居正改革'],[1578,'李时珍完成《本草纲目》'],[1644,'李自成攻破北京，崇祯帝自缢']],
-  p:['朱元璋','朱棣','郑和','于谦','王阳明','戚继光','张居正','李时珍','徐光启']},
- {id:'houjin2',n:'后金',s:1616,e:1644,era:'mingqing',lane:1,f:'努尔哈赤',c:'赫图阿拉，后迁盛京（今沈阳）',
-  sum:'女真首领努尔哈赤建立，1636年皇太极改国号为"清"，改族名为"满洲"。此处为清入关前时期。',
-  ev:[[1616,'努尔哈赤称汗，建立后金'],[1619,'萨尔浒之战大败明军'],[1625,'迁都沈阳'],[1636,'皇太极称帝，改国号"清"']],
-  p:['努尔哈赤','皇太极','多尔衮']},
- {id:'nanming',n:'南明',s:1644,e:1662,era:'mingqing',lane:1,f:'弘光帝朱由崧等',c:'南京、福州、肇庆等',
-  sum:'明亡后宗室在南方相继建立的政权，抗清约二十年。',
-  ev:[[1644,'福王在南京即位'],[1645,'扬州之战，史可法殉国'],[1661,'郑成功收复台湾（1662年荷兰人投降）'],[1662,'永历帝被杀，南明结束']],
-  p:['史可法','郑成功','李定国']},
- {id:'qing',n:'清',s:1636,e:1912,ds:1644,era:'mingqing',lane:0,major:1,f:'清太宗皇太极（1636年改国号）',c:'北京（入关后）',
-  sum:'中国最后一个帝制王朝，奠定了近代中国的疆域基础。前期康雍乾盛世，后期在列强侵略和内部危机中衰落，最终被辛亥革命推翻。（1644年入关）',
-  ev:[[1644,'清军入关，定都北京'],[1683,'统一台湾，次年设台湾府'],[1689,'中俄《尼布楚条约》'],[1793,'英国马戛尔尼使团来华'],[1840,'鸦片战争爆发'],[1842,'《南京条约》签订'],[1851,'太平天国运动（至1864年）'],[1861,'洋务运动开始'],[1894,'甲午战争'],[1898,'戊戌变法'],[1911,'辛亥革命'],[1912,'宣统帝退位，清亡']],
-  p:['康熙','雍正','乾隆','曹雪芹','林则徐','曾国藩','左宗棠','李鸿章','康有为']},
-
- {id:'minguo',n:'中华民国',s:1912,e:1949,era:'modern',lane:0,major:1,f:'孙中山（临时大总统）',c:'南京、北京',
-  sum:'亚洲第一个民主共和国，结束两千多年帝制。经历军阀混战、北伐、十四年抗日战争和国共内战。1949年国民政府迁往台湾。',
-  ev:[[1912,'中华民国成立，孙中山就任临时大总统'],[1915,'新文化运动兴起'],[1919,'五四运动'],[1921,'中国共产党成立'],[1924,'第一次国共合作'],[1928,'东北易帜，全国形式上统一'],[1931,'九一八事变'],[1937,'七七事变，全面抗战爆发'],[1945,'抗日战争胜利'],[1949,'国民政府迁往台湾']],
-  p:['孙中山','袁世凯','蔡元培','鲁迅','蒋介石','毛泽东']},
- {id:'prc',n:'中华人民共和国',s:1949,e:NOW,era:'modern',lane:0,major:1,open:1,f:'毛泽东',c:'北京',
-  sum:'1949年10月1日成立。经过社会主义建设和1978年开始的改革开放，成为世界第二大经济体。',
-  ev:[[1949,'10月1日中华人民共和国成立'],[1953,'第一个五年计划开始'],[1964,'第一颗原子弹爆炸成功'],[1971,'恢复在联合国的合法席位'],[1978,'改革开放开始'],[1997,'香港回归'],[1999,'澳门回归'],[2001,'加入世界贸易组织'],[2003,'神舟五号载人航天成功'],[2008,'北京奥运会']],
-  p:['毛泽东','周恩来','邓小平']}
-];
-const PINS=[
- [-2070,'夏朝建立','xia'],[-1300,'盘庚迁殷','shang'],[-1046,'牧野之战','xizhou'],[-841,'共和行政','xizhou'],[-770,'平王东迁','chunqiu'],
- [-551,'孔子诞生','chunqiu'],[-356,'商鞅变法','zhanguo'],[-221,'秦统一六国','qin'],[-138,'张骞出使西域','xihan'],[105,'蔡伦改进造纸','donghan'],
- [208,'赤壁之战','donghan'],[383,'淝水之战','dongjin'],[494,'孝文帝迁洛','beiwei'],[605,'开凿大运河','sui'],[627,'贞观之治','tang'],
- [755,'安史之乱','tang'],[960,'陈桥兵变','beisong'],[1127,'靖康之变','beisong'],[1279,'元统一全国','yuan'],[1405,'郑和下西洋','ming'],
- [1644,'清军入关','qing'],[1840,'鸦片战争','qing'],[1911,'辛亥革命','qing'],[1949,'新中国成立','prc'],[1978,'改革开放','prc']
-];
-
-// 补充资料：新增政权与各朝的制度成就、衰亡原因、更多大事
-D.push(...EXTRA_REGIMES);
-for(const d of D){
-  const m=MORE[d.id]; if(!m)continue;
-  if(m.ev)d.ev=[...d.ev,...m.ev];
-  if(m.p)d.p=[...d.p,...m.p.filter(x=>!d.p.includes(x))];
-  Object.assign(d,{kings:m.kings,last:m.last,ach:m.ach,fall:m.fall});
-  d.ev.sort((a,b)=>a[0]-b[0]);
-}
-const MIN=-2150, MAX=NOW+30, PAD=24, LANES=5;
-const ERA_BY=Object.fromEntries(ERAS.map(e=>[e.id,e]));
-const ORDER=[...D].sort((a,b)=>a.s-b.s||a.lane-b.lane);
-const $=id=>document.getElementById(id);
-const fy=y=>y<0?`前${-y}年`:`${y}年`;
-const span=d=>(d.approx?'约':'')+fy(d.s)+' – '+(d.open?'今':fy(d.e));
-const dur=d=>d.e-d.s+(d.s<0&&d.e>0?-1:0);
-const ec=id=>`var(--e-${id})`;
-let ppy=1, sel=null, matches=null;
-
-// 缩放：滑块 0-100 映射到 0.25-10 像素/年（对数）
-const z2p=v=>0.25*Math.pow(40,v/100), p2z=p=>100*Math.log(p/0.25)/Math.log(40);
-const X=y=>PAD+(y-MIN)*ppy;
-
-const scroll=$('scroll'), canvas=$('canvas');
-const TOP_PINS=56, AXIS_H=26;
-const laneTop=l=>TOP_PINS+8+l*parseInt(getComputedStyle(document.documentElement).getPropertyValue('--lane-h'));
-
-function render(){
-  const LH=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--lane-h'));
-  const W=X(MAX)+PAD, H=TOP_PINS+8+LANES*LH+AXIS_H+6;
-  canvas.style.width=W+'px'; canvas.style.height=H+'px';
-  let h='';
-  for(const e of ERAS){
-    h+=`<div class="band" style="--c:${ec(e.id)};left:${X(e.s)}px;width:${X(e.e)-X(e.s)}px"><span>${e.name}</span></div>`;
-  }
-  // 网格与刻度
-  const steps=[10,20,25,50,100,200,250,500,1000];
-  const step=steps.find(s=>s*ppy>=80)||1000;
-  const axisY=TOP_PINS+8+LANES*LH+4;
-  let ticks='';
-  for(let y=Math.ceil(MIN/step)*step;y<=MAX;y+=step){
-    h+=`<div class="grid" style="left:${X(y)}px;top:${TOP_PINS}px;height:${axisY-TOP_PINS}px"></div>`;
-    ticks+=`<div class="tick${y===0?' zero':''}" style="left:${X(y)}px">${y===0?'公元元年':(y<0?'前'+(-y):y)}</div>`;
-  }
-  // 大事件针
-  let rowEnd=[-1e9,-1e9];
-  for(const [y,t,id] of PINS){
-    const x=X(y), w=t.length*12+16;
-    let r=x>rowEnd[0]+6?0:(x>rowEnd[1]+6?1:-1);
-    if(r<0){r=rowEnd[0]<rowEnd[1]?0:1}
-    rowEnd[r]=x+w;
-    const top=6+r*22+18;
-    h+=`<div class="pinline" style="left:${x}px;top:${top+10}px;height:${TOP_PINS+8-top-10}px"></div>`;
-    h+=`<button class="pin" data-id="${id}" data-y="${y}" style="left:${x}px;top:${top}px" title="${fy(y)} ${t}">${t}</button>`;
-  }
-  // 朝代色块
-  for(const d of D){
-    const l=X(d.ds??d.s), w=Math.max(3,X(d.e)-l);
-    const tiny=w<(d.n.length*16+14), narrow=w<120;
-    h+=`<button class="blk${d.major?' major':''}${tiny?' tiny':''}${narrow?' narrow':''}" data-id="${d.id}" style="--c:${ec(d.era)};left:${l}px;width:${w}px;top:${laneTop(d.lane)+4}px" title="${d.n}  ${span(d)}" aria-label="${d.n}，${span(d)}"><b>${d.n}</b><small>${span(d)}</small></button>`;
-  }
-  h+=`<div class="axis" style="top:${axisY}px">${ticks}</div>`;
-  canvas.innerHTML=h;
-  paintState();
-  updateMini();
-}
-
-function paintState(){
-  canvas.querySelectorAll('.blk').forEach(b=>{
-    const id=b.dataset.id;
-    b.classList.toggle('on',sel&&sel.id===id);
-    b.classList.toggle('dim',!!matches&&!matches.has(id));
-    b.classList.toggle('hit',!!matches&&matches.has(id)&&!(sel&&sel.id===id));
-  });
-  canvas.querySelectorAll('.pin').forEach(p=>p.classList.toggle('on',sel&&sel.id===p.dataset.id));
-  document.querySelectorAll('.row').forEach(r=>r.classList.toggle('on',sel&&sel.id===r.dataset.id));
-}
-
-// 全景缩略条
-const mini=$('mini');
-function buildMini(){
-  const tot=MAX-MIN;
-  let h=`<i style="--c:var(--line);flex:${ERAS[0].s-MIN}"></i>`;
-  for(const e of ERAS) h+=`<i style="--c:${ec(e.id)};flex:${e.e-e.s}">${e.name}</i>`;
-  h+=`<i style="--c:var(--line);flex:${MAX-NOW}"></i><div class="view" id="view"></div>`;
-  mini.innerHTML=h;
-}
-function updateMini(){
-  const v=$('view'); if(!v) return;
-  const W=canvas.offsetWidth, mw=mini.clientWidth;
-  v.style.left=(scroll.scrollLeft/W*mw)+'px';
-  v.style.width=Math.max(6,scroll.clientWidth/W*mw)+'px';
-}
-function miniJump(ev){
-  const r=mini.getBoundingClientRect();
-  const f=(ev.clientX-r.left)/r.width;
-  scroll.scrollLeft=f*canvas.offsetWidth-scroll.clientWidth/2;
-}
-let miniDrag=false;
-mini.addEventListener('pointerdown',e=>{miniDrag=true;mini.setPointerCapture(e.pointerId);miniJump(e)});
-mini.addEventListener('pointermove',e=>{if(miniDrag)miniJump(e)});
-mini.addEventListener('pointerup',()=>miniDrag=false);
-mini.addEventListener('keydown',e=>{
-  if(e.key==='ArrowRight'){scroll.scrollLeft+=scroll.clientWidth*.5;e.preventDefault()}
-  if(e.key==='ArrowLeft'){scroll.scrollLeft-=scroll.clientWidth*.5;e.preventDefault()}
-});
-scroll.addEventListener('scroll',updateMini,{passive:true});
-
-// 拖动长卷
-let drag=null, moved=false;
-scroll.addEventListener('pointerdown',e=>{
-  if(e.pointerType!=='mouse')return;
-  drag={x:e.clientX,s:scroll.scrollLeft};moved=false;
-});
-window.addEventListener('pointermove',e=>{
-  if(!drag)return;
-  const dx=e.clientX-drag.x;
-  if(Math.abs(dx)>4){moved=true;scroll.classList.add('drag')}
-  if(moved)scroll.scrollLeft=drag.s-dx;
-});
-window.addEventListener('pointerup',()=>{drag=null;scroll.classList.remove('drag')});
-canvas.addEventListener('click',e=>{
-  if(moved){moved=false;return}
-  const t=e.target.closest('[data-id]');
-  if(t)select(t.dataset.id,{center:true});
-});
-
-// 缩放（保持视野中心年份不变）
-function setZoom(v){
-  v=Math.max(0,Math.min(100,v));
-  const centerYear=MIN+(scroll.scrollLeft+scroll.clientWidth/2-PAD)/ppy;
-  $('zoom').value=v; ppy=z2p(v); render();
-  scroll.scrollLeft=X(centerYear)-scroll.clientWidth/2;
-}
-$('zoom').addEventListener('input',e=>setZoom(+e.target.value));
-$('zin').onclick=()=>setZoom(+$('zoom').value+10);
-$('zout').onclick=()=>setZoom(+$('zoom').value-10);
-scroll.addEventListener('wheel',e=>{
-  if(e.ctrlKey||e.metaKey){e.preventDefault();setZoom(+$('zoom').value-Math.sign(e.deltaY)*5);return}
-  if(Math.abs(e.deltaY)>Math.abs(e.deltaX)&&!e.shiftKey){scroll.scrollLeft+=e.deltaY;e.preventDefault()}
-},{passive:false});
-
-// 时代快速跳转
-$('eras').innerHTML=ERAS.map(e=>`<button class="chip" style="--c:${ec(e.id)}" data-era="${e.id}">${e.name}</button>`).join('');
-$('eras').addEventListener('click',e=>{
-  const b=e.target.closest('[data-era]'); if(!b)return;
-  const era=ERA_BY[b.dataset.era];
-  const first=ORDER.find(d=>d.era===era.id&&d.lane===0);
-  scroll.scrollTo({left:X(era.s)-40,behavior:'smooth'});
-  if(first)select(first.id,{center:false});
-});
-
-// 选择与详情
-function select(id,{center=false,scrollDetail=false}={}){
-  const d=D.find(x=>x.id===id); if(!d)return;
-  sel=d;
-  try{history.replaceState(null,'','#'+id)}catch(_){}
-  const i=ORDER.indexOf(d), prev=ORDER[i-1], next=ORDER[i+1];
-  const era=ERA_BY[d.era];
-  const det=$('detail');
-  det.style.setProperty('--c',ec(d.era));
-  det.innerHTML=`
-    <div>
-      <div class="d-era">${era.name}${d.lane>0?' · 并存政权':''}</div>
-      <div class="d-head"><h2 class="d-name">${d.n}</h2></div>
-      <div class="d-years">${span(d)}　·　${d.open?'至今 ':'历时约 '}${dur(d)} 年</div>
-      <p class="d-sum">${d.sum}</p>
-      <dl class="kv">
-        <dt>建立者</dt><dd>${d.f}</dd>
-        <dt>都城</dt><dd>${d.c}</dd>
-        ${d.kings||d.last?`<dt>君主</dt><dd>${[d.kings,d.last?'末代：'+d.last:''].filter(Boolean).join('；')}</dd>`:''}
-        <dt>同期政权</dt><dd>${concurrent(d)||'—'}</dd>
-        <dt>代表人物</dt><dd><div class="people">${d.p.map(x=>`<span>${x}</span>`).join('')}</div></dd>
-      </dl>
-      <div class="nav">
-        <button id="prev" ${prev?'':'disabled'}>← 上一个<b>${prev?prev.n:'—'}</b></button>
-        <button id="next" ${next?'':'disabled'}>下一个 →<b>${next?next.n:'—'}</b></button>
-      </div>
-    </div>
-    <div>
-      <div class="ev-title">大事记</div>
-      <ol class="events">${d.ev.map(([y,t])=>`<li><time>${fy(y)}</time><span>${t}</span></li>`).join('')}</ol>
-    </div>
-    ${d.ach||d.fall?`<div class="d-more">
-      ${d.ach?`<div><div class="ev-title">制度 · 经济 · 文化</div><ul class="ach">${d.ach.map(x=>`<li>${x}</li>`).join('')}</ul></div>`:''}
-      ${d.fall?`<div><div class="ev-title">${d.open?'发展':'衰亡原因'}</div><p class="fall">${d.fall}</p></div>`:''}
-    </div>`:''}`;
-  if(prev)$('prev').onclick=()=>select(prev.id,{center:true});
-  if(next)$('next').onclick=()=>select(next.id,{center:true});
-  paintState();
-  if(center){
-    const mid=(X(d.ds??d.s)+X(d.e))/2;
-    scroll.scrollTo({left:mid-scroll.clientWidth/2,behavior:'smooth'});
-  }
-  if(scrollDetail)det.scrollIntoView({behavior:'smooth',block:'start'});
-}
-function concurrent(d){
-  const a=d.ds??d.s;
-  return D.filter(o=>o!==d&&(o.ds??o.s)<d.e&&o.e>a).map(o=>o.n).join('、');
-}
-document.addEventListener('keydown',e=>{
-  if(e.target.closest('input')||!sel)return;
-  const i=ORDER.indexOf(sel);
-  if(e.key==='ArrowRight'&&ORDER[i+1]){select(ORDER[i+1].id,{center:true});e.preventDefault()}
-  if(e.key==='ArrowLeft'&&ORDER[i-1]){select(ORDER[i-1].id,{center:true});e.preventDefault()}
-});
-
-// 搜索
-$('q').addEventListener('input',e=>{
-  const q=e.target.value.trim();
-  if(!q){matches=null;$('qinfo').textContent='';paintState();return}
-  matches=new Set(D.filter(d=>[d.n,d.f,d.c,d.sum,...d.p,...d.ev.map(x=>x[1])].join(' ').includes(q)).map(d=>d.id));
-  $('qinfo').textContent=matches.size?`找到 ${matches.size} 个相关朝代，按回车查看第一个`:'没有找到，换个关键词试试';
-  paintState();
-});
-$('q').addEventListener('keydown',e=>{
-  if(e.key==='Enter'&&matches&&matches.size){
-    const first=ORDER.find(d=>matches.has(d.id));select(first.id,{center:true});
-  }
-});
-
-// 一览
-function buildList(){
-  const maxDur=Math.max(...D.filter(d=>!d.open).map(dur));
-  $('list').innerHTML=ERAS.map(e=>{
-    const ds=ORDER.filter(d=>d.era===e.id);
-    return `<div class="era-grp" style="--c:${ec(e.id)}"><h3>${e.name}<span>${fy(e.s)} – ${e.id==='modern'?'今':fy(e.e)}</span></h3>`+
-      ds.map(d=>`<button class="row" data-id="${d.id}" style="--c:${ec(e.id)}"><b>${d.n}</b><span class="yr">${span(d)}</span><span class="dur">${dur(d)} 年</span><span class="bar" style="width:${Math.min(100,dur(d)/maxDur*100)}%"></span></button>`).join('')+
-      `</div>`;
-  }).join('');
-  $('list').addEventListener('click',e=>{
-    const r=e.target.closest('.row'); if(!r)return;
-    select(r.dataset.id,{center:true});
-    scroll.scrollIntoView({behavior:'smooth',block:'center'});
-  });
-}
-
-// 卷首统计
-$('facts').innerHTML=`
-  <div class="fact"><b>${NOW+2070}</b><span>年 · 自夏朝至今</span></div>
-  <div class="fact"><b>${D.length}</b><span>个收录政权</span></div>
-  <div class="fact"><b>${D.reduce((n,d)=>n+d.ev.length,0)}</b><span>条大事记</span></div>`;
-
-buildMini();
-buildList();
-ppy=z2p(+$('zoom').value);
-render();
-window.addEventListener('resize',()=>{render()});
-const start=(location.hash||'').slice(1);
-select(D.some(d=>d.id===start)?start:'tang',{center:true});
-window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&(!sel||sel.id!==h))select(h,{center:true})});
-</script>
+<script type="module" src="js/main.js"></script>
 </body>
 </html>

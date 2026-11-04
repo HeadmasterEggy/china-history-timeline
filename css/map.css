@@ -1,0 +1,91 @@
+/* 疆域演变地图 */
+
+.map-sec { padding-block: 28px 12px; border-top: 1px solid var(--line); margin-top: 12px; }
+.map-sec > header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; margin-bottom: 16px; }
+.map-sec h2 { font: 900 26px/1.2 var(--f-serif); }
+.map-sec > header p { color: var(--muted); margin: 0; }
+
+.map-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 340px); gap: 20px 32px; align-items: start; }
+.map-stage {
+  position: relative; border: 1px solid var(--line); border-radius: 8px; overflow: hidden;
+  background: var(--map-sea);
+}
+.map-stage svg { display: block; width: 100%; height: auto; aspect-ratio: 1000 / 747; }
+.map-sec.loading .map-stage::after {
+  content: "地图加载中…"; position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted);
+}
+
+/* 图层 */
+.sea { fill: var(--map-sea); }
+.land { fill: var(--map-land); }
+.shape { stroke: var(--surface); stroke-width: 0.8; stroke-linejoin: round; transition: opacity .2s; }
+.shape.other { fill: var(--map-other); }
+.shape.main { fill: color-mix(in srgb, var(--c) 72%, var(--map-land)); cursor: pointer; }
+.shape.para { fill: color-mix(in srgb, var(--c) 38%, var(--map-land)); stroke: var(--c); stroke-dasharray: 4 3; cursor: pointer; }
+.shape.adm { stroke: var(--c); cursor: pointer; }
+.shape[data-id]:hover { opacity: .85; }
+.shape.on { stroke: var(--ink); stroke-width: 2; stroke-dasharray: none; }
+.frame.fade { animation: map-in .45s ease-out; }
+@keyframes map-in { from { opacity: .35; } to { opacity: 1; } }
+
+.lbl {
+  font: 600 13px var(--f-serif); fill: var(--muted); pointer-events: none;
+  paint-order: stroke; stroke: var(--map-land); stroke-width: 3px; stroke-linejoin: round;
+}
+.lbl.main, .lbl.para, .lbl.adm { fill: var(--ink); }
+.lbl.main.big { font-size: 26px; font-weight: 900; letter-spacing: .08em; }
+.lbl.para { font-size: 15px; }
+
+.map-modern {
+  position: absolute; inset: auto 16px 16px 16px; padding: 14px 18px; border-radius: 6px;
+  background: var(--surface); border: 1px solid var(--line); max-width: 30em;
+}
+.map-modern a { color: var(--accent); }
+
+/* 侧栏 */
+.map-side { display: flex; flex-direction: column; gap: 10px; }
+.m-year { color: var(--muted); font-variant-numeric: tabular-nums; }
+.m-title { font: 900 32px/1.1 var(--f-serif); }
+.m-desc, .m-note { margin: 0; }
+.m-note { font-size: 13px; color: var(--muted); padding: 6px 10px; border-left: 2px solid var(--line); }
+.m-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.m-legend button {
+  display: flex; align-items: center; gap: 8px; width: 100%; padding: 4px 6px; border: 0; border-radius: 4px;
+  background: none; cursor: pointer; text-align: left; font: 600 15px var(--f-serif);
+}
+.m-legend button:hover { background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.m-legend small { margin-left: auto; font: 400 12px var(--f-sans); color: var(--muted); }
+.m-keys { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--muted); }
+.m-keys span { display: inline-flex; align-items: center; gap: 5px; }
+.sw { width: 16px; height: 11px; border-radius: 2px; flex: none; display: inline-block; --c: var(--muted); }
+.sw.main { background: color-mix(in srgb, var(--c) 72%, var(--map-land)); }
+.sw.para { background: color-mix(in srgb, var(--c) 38%, var(--map-land)); border: 1px dashed var(--c); }
+.sw.adm { background: repeating-linear-gradient(45deg, var(--c) 0 2px, var(--map-land) 2px 5px); border: 1px solid var(--c); }
+.sw.other { background: var(--map-other); }
+.m-focus {
+  align-self: flex-start; border: 1px solid var(--line); background: var(--surface); border-radius: 6px;
+  padding: 6px 12px; cursor: pointer; font-size: 13px;
+}
+
+/* 播放控制 */
+.map-ctrl { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 14px; }
+.map-ctrl > button {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 6px; padding: 6px 12px;
+  cursor: pointer; font-size: 13px; white-space: nowrap;
+}
+#map-play { min-width: 7.5em; background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.map-track { flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.map-track input { width: 100%; accent-color: var(--accent); }
+.map-dots { display: flex; justify-content: space-between; }
+.map-dots button {
+  width: 10px; height: 10px; padding: 0; border-radius: 50%; border: 0; cursor: pointer;
+  background: color-mix(in srgb, var(--c) 55%, var(--surface));
+}
+.map-dots button.on { background: var(--c); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 30%, transparent); }
+.map-src { font-size: 12px; color: var(--muted); margin: 10px 0 0; }
+.map-src a { color: inherit; }
+
+@media (max-width: 900px) {
+  .map-body { grid-template-columns: minmax(0, 1fr); }
+  .map-dots button { width: 7px; height: 7px; }
+}

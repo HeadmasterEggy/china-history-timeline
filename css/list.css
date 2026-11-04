@@ -1,0 +1,21 @@
+/* 历代一览 */
+/* —— 一览 —— */
+section.list{padding-block:20px 60px}
+section.list h2{font:900 26px/1.2 var(--f-serif);margin-bottom:4px}
+section.list > p{color:var(--muted);margin:0 0 18px}
+.era-grp{margin-top:22px}
+.era-grp h3{font:600 15px/1 var(--f-serif);color:var(--c);letter-spacing:.12em;padding-bottom:8px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}
+.era-grp h3 span{font:400 12px var(--f-sans);color:var(--muted);letter-spacing:0;font-variant-numeric:tabular-nums}
+.row{display:grid;grid-template-columns:8em 11em 4.5em minmax(0,1fr);gap:12px;align-items:center;width:100%;
+  padding:7px 4px;border:0;border-bottom:1px solid color-mix(in srgb,var(--line) 60%,transparent);background:none;cursor:pointer;text-align:left}
+.row:hover{background:color-mix(in srgb,var(--c) 8%,transparent)}
+.row.on{background:color-mix(in srgb,var(--c) 14%,transparent)}
+.row b{font:600 15px var(--f-serif)}
+.row .yr,.row .dur{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.row .dur{text-align:right}
+.row .bar{height:8px;border-radius:2px;background:var(--c);opacity:.75}
+
+@media (max-width: 760px) {
+  .row { grid-template-columns: 6.5em 1fr 3.5em; }
+  .row .bar { display: none; }
+}

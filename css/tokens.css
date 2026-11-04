@@ -1,0 +1,32 @@
+/* 设计变量：配色（浅色 / 深色）、字体、尺寸 */
+/* 页面结构：一幅横向展开的"长卷"——上方全景缩略条，中部按真实年份比例排布的政权泳道，下方为选中朝代的详情与全部朝代一览 */
+:root{
+  --paper:#ECEEE8; --surface:#F7F8F4; --ink:#1B2124; --muted:#5B6662; --line:#CBD2CA;
+  --accent:#2C5C8C; --seal:#A8372B; --on-era:#FFFFFF;
+  --e-xianqin:#94642F; --e-qinhan:#AE412E; --e-weijin:#93405C; --e-suitang:#A47F10;
+  --e-songyuan:#2C785D; --e-mingqing:#2D5F9C; --e-modern:#4A546D;
+  --f-brush:"Ma Shan Zheng","STKaiti","KaiTi","Kaiti SC",serif;
+  --f-serif:"Noto Serif SC","Songti SC","SimSun",serif;
+  --f-sans:"Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --lane-h:46px;
+  --map-sea:#DCE3E3; --map-land:#E9ECE4; --map-other:#CDD2C9;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#101516; --surface:#182022; --ink:#E2E6E0; --muted:#98A29D; --line:#2C3638;
+    --accent:#86AEDB; --seal:#E27563; --on-era:#0E1314;
+    --map-sea:#0C1214; --map-land:#1C2426; --map-other:#2A3436;
+    --e-xianqin:#D39D60; --e-qinhan:#E2755E; --e-weijin:#D27C98; --e-suitang:#D8B44A;
+    --e-songyuan:#62BB97; --e-mingqing:#76A2DC; --e-modern:#98A2C0;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#101516; --surface:#182022; --ink:#E2E6E0; --muted:#98A29D; --line:#2C3638;
+  --accent:#86AEDB; --seal:#E27563; --on-era:#0E1314;
+    --map-sea:#0C1214; --map-land:#1C2426; --map-other:#2A3436;
+  --e-xianqin:#D39D60; --e-qinhan:#E2755E; --e-weijin:#D27C98; --e-suitang:#D8B44A;
+  --e-songyuan:#62BB97; --e-mingqing:#76A2DC; --e-modern:#98A2C0;
+  color-scheme:dark;
+}

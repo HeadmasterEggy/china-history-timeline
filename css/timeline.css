@@ -1,0 +1,59 @@
+/* 全景缩略条与长卷时间轴 */
+/* —— 全景缩略条 —— */
+.mini{position:relative;height:30px;border-radius:4px;overflow:hidden;display:flex;cursor:pointer;
+  border:1px solid var(--line);touch-action:none;user-select:none}
+.mini i{display:block;height:100%;background:color-mix(in srgb,var(--c) 30%,var(--surface));
+  border-right:1px solid var(--surface);font:500 11px/30px var(--f-sans);font-style:normal;
+  color:var(--ink);text-align:center;overflow:hidden;white-space:nowrap}
+.mini .view{position:absolute;top:0;bottom:0;border:2px solid var(--ink);border-radius:3px;
+  background:color-mix(in srgb,var(--ink) 8%,transparent);pointer-events:none}
+.mini-cap{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums}
+
+
+/* —— 长卷 —— */
+.scroll{overflow-x:auto;overflow-y:hidden;background:var(--surface);border:1px solid var(--line);border-radius:8px;
+  margin-top:14px;cursor:grab;scrollbar-color:var(--line) transparent}
+.scroll.drag{cursor:grabbing}
+.canvas{position:relative}
+.band{position:absolute;top:0;bottom:0;background:color-mix(in srgb,var(--c) 6%,transparent);border-left:1px dashed color-mix(in srgb,var(--c) 45%,transparent)}
+.band span{position:sticky;left:8px;display:inline-block;margin:6px 8px;font:600 13px/1 var(--f-serif);color:var(--c);letter-spacing:.1em;white-space:nowrap}
+.pin{position:absolute;height:20px;display:flex;align-items:center;gap:4px;font-size:12px;white-space:nowrap;
+  color:var(--muted);background:none;border:0;padding:0 2px;cursor:pointer}
+.pin::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--seal);flex:none;margin-left:-5.5px}
+.pin:hover,.pin.on{color:var(--seal)}
+.pinline{position:absolute;width:1px;background:color-mix(in srgb,var(--seal) 35%,transparent);pointer-events:none}
+.lane-label{position:sticky;left:0;z-index:3;width:0;height:0}
+.blk{position:absolute;height:calc(var(--lane-h) - 8px);border-radius:4px;cursor:pointer;
+  background:color-mix(in srgb,var(--c) 22%,var(--surface));border:1px solid color-mix(in srgb,var(--c) 60%,transparent);
+  display:flex;flex-direction:column;justify-content:center;padding:0 8px;overflow:hidden;text-align:left;
+  transition:background .15s,opacity .15s}
+.blk b{font:600 15px/1.15 var(--f-serif);white-space:nowrap}
+.blk small{font-size:11px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.blk.major b{font-weight:900;font-size:17px}
+.blk.tiny{padding:0}
+.blk.tiny b,.blk.tiny small,.blk.narrow small{display:none}
+.blk:hover{background:color-mix(in srgb,var(--c) 38%,var(--surface))}
+.blk.on{background:var(--c);border-color:var(--c);color:var(--on-era);z-index:2}
+.blk.on small{color:var(--on-era);opacity:.85}
+.blk.dim{opacity:.18}
+.blk.hit{box-shadow:0 0 0 2px var(--seal)}
+.axis{position:absolute;left:0;right:0;border-top:1px solid var(--line)}
+.tick{position:absolute;top:0;font-size:11px;color:var(--muted);transform:translateX(-50%);padding-top:5px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tick::before{content:"";position:absolute;left:50%;top:0;height:5px;border-left:1px solid var(--line)}
+.tick.zero{color:var(--ink);font-weight:700}
+.grid{position:absolute;width:1px;background:color-mix(in srgb,var(--line) 55%,transparent);pointer-events:none}
+.hint{font-size:12px;color:var(--muted);margin-top:6px}
+
+/* —— 分合色带 —— */
+.unity {
+  position: absolute; height: 20px; border-radius: 3px; overflow: hidden;
+  font-size: 11px; line-height: 20px; text-align: center; white-space: nowrap; color: var(--ink);
+  border: 1px solid var(--line);
+}
+.unity-unified { background: color-mix(in srgb, var(--ink) 22%, var(--surface)); }
+.unity-royal { background: color-mix(in srgb, var(--ink) 12%, var(--surface)); }
+.unity-loose { background: repeating-linear-gradient(90deg, color-mix(in srgb, var(--ink) 18%, var(--surface)) 0 8px, var(--surface) 8px 11px); }
+.unity-divided { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--seal) 22%, var(--surface)) 0 5px, var(--surface) 5px 10px); }
+.unity-key { display: inline-flex; gap: 12px; flex-wrap: wrap; margin-left: 12px; }
+.unity-key span { display: inline-flex; align-items: center; gap: 5px; }
+.unity-key i { width: 18px; height: 10px; border-radius: 2px; border: 1px solid var(--line); }
