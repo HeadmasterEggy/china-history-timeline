@@ -5,7 +5,9 @@
 因此每一帧的政权归属和中文名称都由下方 FRAMES 配置人工指定，不直接使用原始名称。
 现代国界（1912 年以后）不在此绘制，页面中引导读者查阅国家标准地图。
 
-用法：
+部分年份的边界有明显史实错误（如 1200 年南宋仍据有华北），由 FRAMES 中的 fix 按分界线校正。
+
+用法（需要 shapely：pip install -r scripts/requirements.txt）：
     python3 scripts/build_map.py <historical-basemaps 的 geojson 目录>
 """
 
@@ -34,6 +36,22 @@ HEIGHT = SCALE * (merc(LAT1) - merc(LAT0))
 def project(lon, lat):
     lat = max(-80.0, min(80.0, lat))
     return ((lon - LON0) * SCALE, (merc(LAT1) - merc(lat)) * SCALE)
+
+
+# ---------- 史实校正 ----------
+# 原始数据在部分年份沿用了更早的边界。以下折线（经度, 纬度）为近似的南北分界，
+# 线以北的部分从前者划归后者。
+HUAI_1200 = [(98, 34.0), (103, 34.0), (106.9, 34.35), (110, 33.2), (112.5, 32.6), (114.5, 32.4),
+             (116.5, 32.6), (118.5, 33.3), (121.5, 34.0), (124, 34.0)]   # 宋金：淮河—大散关
+HUAI_500 = [(98, 33.5), (103, 33.5), (107, 33.3), (110, 33.0), (112.5, 32.5), (114.5, 32.3),
+            (116.5, 32.4), (118.5, 33.0), (121.5, 33.8), (124, 33.8)]    # 齐魏：北魏 469 年取青齐、500 年取寿春
+JIN_400 = [(98, 33.0), (103, 33.0), (110, 33.3), (113, 33.8), (116.5, 34.3), (118.5, 34.6),
+           (121.5, 35.2), (124, 35.2)]                                    # 东晋：洛阳 399 年失于后秦，青齐属南燕
+
+
+def north_of(line, top=56):
+    """由分界折线向北围成的多边形（经纬度）。"""
+    return line + [(line[-1][0], top), (line[0][0], top)]
 
 
 # ---------- 帧配置 ----------
@@ -83,10 +101,12 @@ FRAMES = [
     {"src": "400", "year": 400, "title": "东晋十六国", "focus": "dongjin",
      "desc": "晋室南渡，以淮河、秦岭一线与北方十六国对峙。",
      "map": {"Jin": ("main", "dongjin", "东晋"), "Sixteen Kingdoms": ("para", "shiliuguo", "十六国"),
-             "Northern Liang": ("para", "shiliuguo", "北凉"), "Hainan": ("main", "dongjin", "")}},
+             "Northern Liang": ("para", "shiliuguo", "北凉"), "Hainan": ("main", "dongjin", "")},
+     "fix": [("Jin", "Sixteen Kingdoms", JIN_400)]},
     {"src": "500", "year": 500, "title": "南北朝", "focus": "beiwei",
      "desc": "北魏统一北方并迁都洛阳，与南朝（此时为南齐）隔淮对峙。",
-     "map": {"Toba Wei": ("para", "beiwei", "北魏"), "Jin Empire": ("main", "nqi", "南齐")}},
+     "map": {"Toba Wei": ("para", "beiwei", "北魏"), "Jin Empire": ("main", "nqi", "南齐")},
+     "fix": [("Jin Empire", "Toba Wei", HUAI_500)]},
     {"src": "600", "year": 600, "title": "隋", "focus": "sui",
      "desc": "隋朝结束南北分裂，北方突厥分裂为东西两部。",
      "map": {"Sui Empire": ("main", "sui", "隋")}},
@@ -119,7 +139,8 @@ FRAMES = [
      "map": {"Song Empire": ("main", "nansong", "南宋"), "Liao": ("para", "jin", "金"),
              "Xixia": ("para", "xixia", "西夏"), "Nan Chao": ("para", "dali", "大理"),
              "Kara Khitai Khaganate": ("other", None, "西辽"), "Tibet": ("other", None, "吐蕃诸部"),
-             "Hainan": ("main", "nansong", "")}},
+             "Hainan": ("main", "nansong", "")},
+     "fix": [("Song Empire", "Liao", HUAI_1200)]},
     {"src": "1279", "year": 1279, "title": "元", "focus": "yuan",
      "desc": "元朝灭南宋，疆域空前辽阔；设宣政院管辖吐蕃地区。",
      "map": {"Great Khanate": ("main", "yuan", "元"), "Tibet": ("adm", "yuan", "宣政院辖地"),
@@ -143,6 +164,41 @@ FRAMES = [
      "desc": "鸦片战争后，清朝被迫割让香港岛、台湾等地，北方大片领土被沙俄侵占。",
      "map": {"Manchu Empire": ("main", "qing", "清")}},
 ]
+
+# 各帧都城（名称, 经度, 纬度），第一个为该时期中原王朝的都城
+CAPITALS = {-2000: [('阳城（传说）', 113.05, 34.45)], -1500: [('亳（今郑州）', 113.67, 34.75)], -1000: [('镐京', 108.78, 34.23),
+    ('成周洛邑', 112.45, 34.62)], -700: [('洛邑', 112.45, 34.62)], -500: [('洛邑', 112.45, 34.62)], -400: [('洛邑', 112.45, 34.62),
+    ('临淄', 118.35, 36.85),
+    ('郢', 112.2, 30.4),
+    ('安邑', 111.1, 35.1)], -300: [('咸阳', 108.7, 34.35),
+    ('临淄', 118.35, 36.85),
+    ('郢', 112.2, 30.4),
+    ('邯郸', 114.5, 36.6),
+    ('大梁', 114.35, 34.8),
+    ('新郑', 113.7, 34.4),
+    ('蓟', 116.35, 39.9)], -200: [('长安', 108.88, 34.3),
+    ('番禺', 113.26, 23.13)], -100: [('长安', 108.88, 34.3)], -1: [('长安', 108.88, 34.3)], 100: [('洛阳', 112.62, 34.72)], 300: [('洛阳', 112.62, 34.72)], 400: [('建康', 118.78, 32.05),
+    ('姑臧', 102.64, 37.93)], 500: [('建康', 118.78, 32.05),
+    ('洛阳', 112.62, 34.72)], 600: [('大兴', 108.94, 34.27)], 700: [('长安', 108.94, 34.27),
+    ('神都洛阳', 112.45, 34.62),
+    ('逻些', 91.13, 29.65)], 800: [('长安', 108.94, 34.27),
+    ('逻些', 91.13, 29.65),
+    ('羊苴咩城', 100.16, 25.69),
+    ('上京龙泉府', 129.1, 43.97)], 900: [('长安', 108.94, 34.27),
+    ('羊苴咩城', 100.16, 25.69),
+    ('上京龙泉府', 129.1, 43.97)], 1000: [('东京开封', 114.35, 34.79),
+    ('辽上京', 119.39, 43.97),
+    ('大理', 100.16, 25.69)], 1100: [('东京开封', 114.35, 34.79),
+    ('辽上京', 119.39, 43.97),
+    ('兴庆府', 106.23, 38.47),
+    ('大理', 100.16, 25.69)], 1200: [('临安', 120.17, 30.25),
+    ('金中都', 116.35, 39.88),
+    ('兴庆府', 106.23, 38.47),
+    ('大理', 100.16, 25.69)], 1279: [('大都', 116.4, 39.95),
+    ('上都', 116.18, 42.36)], 1500: [('北京', 116.4, 39.91),
+    ('南京', 118.78, 32.05)], 1600: [('北京', 116.4, 39.91),
+    ('南京', 118.78, 32.05)], 1650: [('北京', 116.4, 39.91),
+    ('肇庆（南明永历）', 112.47, 23.05)], 1800: [('北京', 116.4, 39.91)], 1900: [('北京', 116.4, 39.91)]}
 
 # 周边政权与文化的中文名
 NEIGHBORS = {
@@ -244,10 +300,25 @@ def to_path(geom):
     return "".join(parts), biggest, center
 
 
+def apply_fixes(features, fixes):
+    """把 src 位于分界线以北的部分划给 dst（需要 shapely，见 scripts/requirements.txt）。"""
+    from shapely.geometry import Polygon, mapping, shape
+
+    by_name = {ft["properties"].get("NAME"): ft for ft in features if ft.get("geometry")}
+    for src, dst, line in fixes:
+        region = Polygon(north_of(line))
+        a, b = shape(by_name[src]["geometry"]), shape(by_name[dst]["geometry"])
+        moved = a.intersection(region)
+        by_name[src]["geometry"] = mapping(a.difference(region))
+        by_name[dst]["geometry"] = mapping(b.union(moved).buffer(0))
+
+
 def build(src_dir):
     frames = []
     for cfg in FRAMES:
         data = json.load(open(os.path.join(src_dir, f"world_{cfg['src']}.geojson"), encoding="utf-8"))
+        if cfg.get("fix"):
+            apply_fixes(data["features"], cfg["fix"])
         shapes = []
         for ft in data["features"]:
             name = ft["properties"].get("NAME")
@@ -268,7 +339,12 @@ def build(src_dir):
             shapes.append(shape)
         order = {"other": 0, "adm": 1, "para": 2, "main": 3}
         shapes.sort(key=lambda s: order[s["role"]])
-        frames.append({k: cfg[k] for k in ("year", "title", "focus", "desc")} | {"shapes": shapes})
+        capitals = []
+        for name, lon, lat in CAPITALS.get(cfg["year"], []):
+            cx, cy = project(lon, lat)
+            capitals.append({"name": name, "x": round(cx, 1), "y": round(cy, 1)})
+        frames.append({k: cfg[k] for k in ("year", "title", "focus", "desc")}
+                      | {"shapes": shapes, "capitals": capitals})
 
     # 底图：现代陆地轮廓（只填色、不画国界）
     land = json.load(open(os.path.join(src_dir, "world_2010.geojson"), encoding="utf-8"))

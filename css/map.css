@@ -89,3 +89,13 @@
   .map-body { grid-template-columns: minmax(0, 1fr); }
   .map-dots button { width: 7px; height: 7px; }
 }
+
+/* 都城标记 */
+.cap { pointer-events: none; }
+.cap rect, .cap circle { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; }
+.cap.prime rect { fill: var(--seal); stroke: var(--surface); }
+.cap text {
+  font: 500 12px var(--f-sans); fill: var(--ink);
+  paint-order: stroke; stroke: var(--map-land); stroke-width: 3px; stroke-linejoin: round;
+}
+.sw.cap-key { width: 9px; height: 9px; background: var(--seal); transform: rotate(45deg); border-radius: 1px; margin: 0 3px; }

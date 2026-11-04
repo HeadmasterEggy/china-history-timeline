@@ -44,16 +44,35 @@ export function createTerritoryMap(root, model, store) {
       <title>${s.label || ROLE_LABEL[s.role]}</title></path>`;
   }
 
-  function labelSVG(s) {
+  /** 区域标签；若与都城标记过近则向下让开，避免遮挡 */
+  function labelSVG(s, capitals) {
     if (!s.label) return '';
+    let y = s.ly;
+    const halfW = s.label.length * (s.big ? 14 : 8);
+    for (let tries = 0; tries < 4; tries++) {
+      const hit = capitals.some((c) => Math.abs(c.y - y) < (s.big ? 22 : 14) && c.x > s.lx - halfW - 50 && c.x < s.lx + halfW);
+      if (!hit) break;
+      y += s.big ? 30 : 18;
+    }
     const cls = `lbl ${s.role}${s.big ? ' big' : ''}`;
-    return `<text class="${cls}" x="${s.lx}" y="${s.ly}" text-anchor="middle" dominant-baseline="middle">${s.label}</text>`;
+    return `<text class="${cls}" x="${s.lx}" y="${y}" text-anchor="middle" dominant-baseline="middle">${s.label}</text>`;
+  }
+
+  /** 都城：第一个为中原王朝都城，用实心方块，其余用圆点 */
+  function capitalSVG(c, i) {
+    const mark = i === 0
+      ? `<rect x="${c.x - 4}" y="${c.y - 4}" width="8" height="8" transform="rotate(45 ${c.x} ${c.y})"/>`
+      : `<circle cx="${c.x}" cy="${c.y}" r="3.5"/>`;
+    return `<g class="cap${i === 0 ? ' prime' : ''}"><title>都城：${c.name}</title>${mark}
+      <text x="${c.x + 8}" y="${c.y}" dominant-baseline="middle">${c.name}</text></g>`;
   }
 
   function renderFrame() {
     const f = frames[index];
     const layer = svg.querySelector('.frame');
-    layer.innerHTML = f.shapes.map(shapeSVG).join('') + f.shapes.map(labelSVG).join('');
+    const capitals = f.capitals ?? [];
+    layer.innerHTML = f.shapes.map(shapeSVG).join('') + f.shapes.map((s) => labelSVG(s, capitals)).join('')
+      + capitals.map(capitalSVG).join('');
     layer.classList.remove('fade');
     void layer.getBoundingClientRect();
     layer.classList.add('fade');
@@ -66,7 +85,9 @@ export function createTerritoryMap(root, model, store) {
 
   function renderSide(f) {
     const focus = model.get(f.focus);
-    const regimes = [...new Map(f.shapes.filter((s) => s.id && s.role !== 'other').map((s) => [s.id, s])).values()];
+    // 按「朝代 + 标签」去重：战国后期的秦与关东六国同属战国，但应分别列出
+    const regimes = [...new Map(f.shapes.filter((s) => s.id && s.role !== 'other' && (s.label || s.role === 'main'))
+      .map((s) => [`${s.id}|${s.label}`, s])).values()].filter((s) => s.label || !f.shapes.some((o) => o.id === s.id && o.label));
     const legend = regimes
       .map((s) => {
         const d = model.get(s.id);
@@ -82,7 +103,7 @@ export function createTerritoryMap(root, model, store) {
       ${legend ? `<ul class="m-legend">${legend}</ul>` : ''}
       <div class="m-keys">
         <span><i class="sw main"></i>中原王朝</span><span><i class="sw para"></i>并存政权</span>
-        <span><i class="sw adm"></i>管辖 / 羁縻</span><span><i class="sw other"></i>周边</span>
+        <span><i class="sw adm"></i>管辖 / 羁縻</span><span><i class="sw other"></i>周边</span><span><i class="sw cap-key"></i>都城</span>
       </div>
       ${focus ? `<button class="m-focus" data-id="${focus.id}">查看「${focus.n}」详情</button>` : ''}`;
   }
