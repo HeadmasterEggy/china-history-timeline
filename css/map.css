@@ -18,7 +18,8 @@
 /* 图层 */
 .sea { fill: var(--map-sea); }
 .land { fill: var(--map-land); }
-.shape { stroke: var(--surface); stroke-width: 0.8; stroke-linejoin: round; transition: opacity .2s; }
+.shape { stroke: var(--surface); stroke-width: 1; stroke-linejoin: round; transition: opacity .2s; vector-effect: non-scaling-stroke; }
+.land { vector-effect: non-scaling-stroke; }
 .shape.other { fill: var(--map-other); }
 .shape.main { fill: color-mix(in srgb, var(--c) 72%, var(--map-land)); cursor: pointer; }
 .shape.para { fill: color-mix(in srgb, var(--c) var(--mix, 38%), var(--map-land)); stroke: var(--c); stroke-dasharray: 4 3; cursor: pointer; }
@@ -29,12 +30,12 @@
 @keyframes map-in { from { opacity: .35; } to { opacity: 1; } }
 
 .lbl {
-  font: 600 13px var(--f-serif); fill: var(--muted); pointer-events: none;
-  paint-order: stroke; stroke: var(--map-land); stroke-width: 3px; stroke-linejoin: round;
+  font: 600 calc(18px * var(--k, 1)) var(--f-serif); fill: var(--muted); pointer-events: none;
+  paint-order: stroke; stroke: var(--map-land); stroke-width: calc(4px * var(--k, 1)); stroke-linejoin: round;
 }
 .lbl.main, .lbl.para, .lbl.adm { fill: var(--ink); }
-.lbl.main.big { font-size: 26px; font-weight: 900; letter-spacing: .08em; }
-.lbl.para { font-size: 15px; }
+.lbl.main.big { font-size: calc(32px * var(--k, 1)); font-weight: 900; letter-spacing: .08em; }
+.lbl.para { font-size: calc(20px * var(--k, 1)); }
 
 .map-modern {
   position: absolute; inset: auto 16px 16px 16px; padding: 14px 18px; border-radius: 6px;
@@ -92,10 +93,10 @@
 
 /* 都城标记 */
 .cap { pointer-events: none; }
-.cap rect, .cap circle { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; }
+.cap rect, .cap circle { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
 .cap.prime rect { fill: var(--seal); stroke: var(--surface); }
 .cap text {
-  font: 500 12px var(--f-sans); fill: var(--ink);
-  paint-order: stroke; stroke: var(--map-land); stroke-width: 3px; stroke-linejoin: round;
+  font: 500 calc(16px * var(--k, 1)) var(--f-sans); fill: var(--ink);
+  paint-order: stroke; stroke: var(--map-land); stroke-width: calc(4px * var(--k, 1)); stroke-linejoin: round;
 }
 .sw.cap-key { width: 9px; height: 9px; background: var(--seal); transform: rotate(45deg); border-radius: 1px; margin: 0 3px; }

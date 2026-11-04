@@ -5,6 +5,14 @@ import { formatYear, eraColor } from '../core/format.js';
 
 const DATA_URL = new URL('../../data/map/borders.json', import.meta.url);
 const PLAY_INTERVAL = 2200;
+const RETRIES = 2;
+
+// 自动聚焦：视野取当前帧全部政权（中原王朝、并存政权、管辖区域）的外接矩形，四周留白，
+// 并限制最大放大倍数，避免夏、商等范围很小的帧放得过大
+const FIT_ROLES = new Set(['main', 'para', 'adm']);
+const FIT_PAD = 0.08;
+const FIT_MIN_W = 0.4;
+const FIT_MS = 600;
 
 // 1912 年以后不绘制疆域，提示查阅国家标准地图
 const MODERN_FRAME = {
@@ -25,6 +33,10 @@ export function createTerritoryMap(root, model, store) {
   let index = 0;
   let timer = null;
   let note = '';
+  let full = [0, 0, 1000, 765];
+  let view = full;
+  let k = 1;   // 当前视野宽度 / 全图宽度，用于让文字和标记在缩放后保持原来的屏幕大小
+  let anim = 0;
 
   const colorOf = (id) => eraColor(model.get(id)?.era ?? 'modern');
 
@@ -52,11 +64,11 @@ export function createTerritoryMap(root, model, store) {
   function labelSVG(s, capitals) {
     if (!s.label) return '';
     let y = s.ly;
-    const halfW = s.label.length * (s.big ? 14 : 8);
+    const halfW = s.label.length * (s.big ? 17 : 11) * k;
     for (let tries = 0; tries < 4; tries++) {
-      const hit = capitals.some((c) => Math.abs(c.y - y) < (s.big ? 22 : 14) && c.x > s.lx - halfW - 50 && c.x < s.lx + halfW);
+      const hit = capitals.some((c) => Math.abs(c.y - y) < (s.big ? 26 : 18) * k && c.x > s.lx - halfW - 64 * k && c.x < s.lx + halfW);
       if (!hit) break;
-      y += s.big ? 30 : 18;
+      y += (s.big ? 36 : 24) * k;
     }
     const cls = `lbl ${s.role}${s.big ? ' big' : ''}`;
     return `<text class="${cls}" x="${s.lx}" y="${y}" text-anchor="middle" dominant-baseline="middle">${s.label}</text>`;
@@ -64,16 +76,75 @@ export function createTerritoryMap(root, model, store) {
 
   /** 都城：第一个为中原王朝都城，用实心方块，其余用圆点 */
   function capitalSVG(c, i) {
+    const r = 5 * k;
     const mark = i === 0
-      ? `<rect x="${c.x - 4}" y="${c.y - 4}" width="8" height="8" transform="rotate(45 ${c.x} ${c.y})"/>`
-      : `<circle cx="${c.x}" cy="${c.y}" r="3.5"/>`;
+      ? `<rect x="${c.x - r}" y="${c.y - r}" width="${2 * r}" height="${2 * r}" transform="rotate(45 ${c.x} ${c.y})"/>`
+      : `<circle cx="${c.x}" cy="${c.y}" r="${4.5 * k}"/>`;
     return `<g class="cap${i === 0 ? ' prime' : ''}"><title>都城：${c.name}</title>${mark}
-      <text x="${c.x + 8}" y="${c.y}" dominant-baseline="middle">${c.name}</text></g>`;
+      <text x="${c.x + 10 * k}" y="${c.y}" dominant-baseline="middle">${c.name}</text></g>`;
+  }
+
+  // ---------- 自动聚焦 ----------
+  /** 当前帧所有政权的外接矩形（从路径坐标直接计算，结果缓存在帧上） */
+  function bounds(f) {
+    if (f.bbox !== undefined) return f.bbox;
+    let [x0, y0, x1, y1] = [Infinity, Infinity, -Infinity, -Infinity];
+    for (const s of f.shapes) {
+      if (!FIT_ROLES.has(s.role) || !s.id) continue;
+      const n = s.d.match(/-?\d+(?:\.\d+)?/g) ?? [];
+      for (let i = 0; i + 1 < n.length; i += 2) {
+        const x = +n[i];
+        const y = +n[i + 1];
+        if (x < x0) x0 = x;
+        if (x > x1) x1 = x;
+        if (y < y0) y0 = y;
+        if (y > y1) y1 = y;
+      }
+    }
+    f.bbox = x0 < Infinity ? [x0, y0, x1, y1] : null;
+    return f.bbox;
+  }
+
+  /** 由外接矩形算出保持地图宽高比的视野 [x, y, w, h] */
+  function fitView(f) {
+    const b = bounds(f);
+    const [, , W, H] = full;
+    if (!b) return full;
+    const ratio = W / H;
+    let w = (b[2] - b[0]) * (1 + 2 * FIT_PAD);
+    let h = (b[3] - b[1]) * (1 + 2 * FIT_PAD);
+    if (w / h < ratio) w = h * ratio;
+    else h = w / ratio;
+    w = Math.min(W, Math.max(W * FIT_MIN_W, w));
+    h = w / ratio;
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+    const x = clamp((b[0] + b[2]) / 2 - w / 2, 0, W - w);
+    const y = clamp((b[1] + b[3]) / 2 - h / 2, 0, H - h);
+    return [x, y, w, h];
+  }
+
+  /** 平滑过渡到新的视野 */
+  function zoomTo(target) {
+    cancelAnimationFrame(anim);
+    const from = view;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const t0 = performance.now();
+    const step = (now) => {
+      const t = reduce ? 1 : Math.min(1, (now - t0) / FIT_MS);
+      const e = 1 - Math.pow(1 - t, 3);
+      view = from.map((v, i) => v + (target[i] - v) * e);
+      svg.setAttribute('viewBox', view.map((v) => v.toFixed(1)).join(' '));
+      if (t < 1) anim = requestAnimationFrame(step);
+    };
+    anim = requestAnimationFrame(step);
   }
 
   function renderFrame() {
     const f = frames[index];
     const layer = svg.querySelector('.frame');
+    const target = fitView(f);
+    k = target[2] / full[2];
+    svg.style.setProperty('--k', k);
     const capitals = f.capitals ?? [];
     const seen = new Map();
     const tones = f.shapes.map((s) => {
@@ -92,6 +163,7 @@ export function createTerritoryMap(root, model, store) {
     dots.querySelectorAll('button').forEach((b, i) => b.classList.toggle('on', i === index));
     renderSide(f);
     highlight();
+    zoomTo(target);
   }
 
   function renderSide(f) {
@@ -125,11 +197,19 @@ export function createTerritoryMap(root, model, store) {
   }
 
   // ---------- 帧切换 ----------
+  /** 选中朝代会重绘地图上方的详情区，高度变化会把地图推走；这里抵消位移，让地图停在原处 */
+  function keepInPlace(fn) {
+    const before = root.getBoundingClientRect().top;
+    fn();
+    const shift = root.getBoundingClientRect().top - before;
+    if (Math.abs(shift) > 1) window.scrollBy({ top: shift, behavior: 'instant' });
+  }
+
   function goTo(i, { fromUser = false } = {}) {
     index = Math.max(0, Math.min(frames.length - 1, i));
     note = '';
     renderFrame();
-    if (fromUser) store.select(frames[index].focus, { source: 'map' });
+    if (fromUser) keepInPlace(() => store.select(frames[index].focus, { source: 'map' }));
   }
 
   /** 为选中的朝代挑选最合适的地图帧 */
@@ -174,7 +254,7 @@ export function createTerritoryMap(root, model, store) {
   });
   root.addEventListener('click', (e) => {
     const t = e.target.closest('.shape[data-id], .m-legend [data-id], .m-focus');
-    if (t) store.select(t.dataset.id, { source: 'map-shape' });
+    if (t) keepInPlace(() => store.select(t.dataset.id, { source: 'map-shape' }));
   });
 
   // 事件定位：优先选含该朝代的帧中年份最接近的一帧
@@ -207,15 +287,24 @@ export function createTerritoryMap(root, model, store) {
     highlight();
   });
 
-  // ---------- 加载 ----------
-  return fetch(DATA_URL)
-    .then((r) => {
-      if (!r.ok) throw new Error(r.status);
-      return r.json();
-    })
+  // ---------- 加载（网络不稳时自动重试，仍失败则提供重试按钮） ----------
+  const fetchData = (tries = RETRIES) =>
+    fetch(DATA_URL)
+      .then((r) => {
+        if (!r.ok) throw new Error(r.status);
+        return r.json();
+      })
+      .catch((err) => {
+        if (tries <= 0) throw err;
+        return new Promise((ok) => setTimeout(ok, 1200)).then(() => fetchData(tries - 1));
+      });
+
+  const load = () => fetchData()
     .then((data) => {
       frames = [...data.frames, MODERN_FRAME];
-      svg.setAttribute('viewBox', `0 0 ${data.width} ${data.height}`);
+      full = [0, 0, data.width, data.height];
+      view = full;
+      svg.setAttribute('viewBox', full.join(' '));
       svg.innerHTML = `<defs>${patterns()}</defs><rect class="sea" width="100%" height="100%"/>
         <path class="land" d="${data.base}"/><g class="frame"></g>`;
       slider.max = frames.length - 1;
@@ -237,7 +326,15 @@ export function createTerritoryMap(root, model, store) {
     })
     .catch(() => {
       root.classList.remove('loading');
-      side.innerHTML = '<p class="m-desc">地图数据加载失败。若直接用浏览器打开本地文件，请改用本地服务器预览（见 README）。</p>';
+      side.innerHTML = `<p class="m-desc">地图数据加载失败，可能是网络不稳定。</p>
+        <button class="m-focus m-retry">重新加载地图</button>
+        <p class="m-note">若直接用浏览器打开本地文件，请改用本地服务器预览（见 README）。</p>`;
+      side.querySelector('.m-retry').addEventListener('click', () => {
+        root.classList.add('loading');
+        side.innerHTML = '';
+        load();
+      });
     });
+  return load();
 }
 

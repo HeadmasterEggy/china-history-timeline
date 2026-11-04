@@ -73,7 +73,13 @@ export function createSidebar(el, toggle, model, store) {
     // 选中项所在的时期若被折叠则展开，并滚动到可见位置
     const sec = current?.closest('.sb-era');
     if (sec?.classList.contains('collapsed')) sec.classList.remove('collapsed');
-    current?.scrollIntoView({ block: 'nearest' });
+    // 只滚动侧边栏列表本身；scrollIntoView 会连带滚动整个页面
+    const list = el.querySelector('.sb-list');
+    if (current) {
+      const top = current.offsetTop - list.offsetTop;
+      if (top < list.scrollTop || top + current.offsetHeight > list.scrollTop + list.clientHeight)
+        list.scrollTop = top - list.clientHeight / 2;
+    }
   });
 
   store.on('search', ({ matches }) => {
