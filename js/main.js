@@ -11,12 +11,14 @@ import { createList } from './components/list.js';
 import { createTerritoryMap } from './components/territoryMap.js';
 import { createPeopleIndex } from './components/peopleIndex.js';
 import { createEventCard } from './components/eventCard.js';
+import { createSidebar } from './components/sidebar.js';
 
 const $ = (id) => document.getElementById(id);
 const DEFAULT_ID = 'tang';
 
 const store = createStore();
 
+createSidebar($('sidebar'), $('sb-toggle'), model, store);
 createHeader($('facts'), model);
 const timeline = createTimeline(
   { scrollEl: $('scroll'), zoomInput: $('zoom'), zoomIn: $('zin'), zoomOut: $('zout') },

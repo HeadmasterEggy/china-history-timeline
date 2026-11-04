@@ -5,7 +5,7 @@
 .map-sec h2 { font: 900 26px/1.2 var(--f-serif); }
 .map-sec > header p { color: var(--muted); margin: 0; }
 
-.map-body { display: grid; grid-template-columns: minmax(0, 820px) minmax(260px, 360px); gap: 20px 32px; align-items: start; }
+.map-body { display: grid; grid-template-columns: minmax(0, 820px) minmax(260px, 360px); gap: 20px 32px; align-items: start; justify-content: center; }
 .map-stage {
   position: relative; border: 1px solid var(--line); border-radius: 8px; overflow: hidden;
   background: var(--map-sea);
@@ -68,7 +68,7 @@
 }
 
 /* 播放控制 */
-.map-ctrl { max-width: 1212px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 14px; }
+.map-ctrl { max-width: 1212px; margin-inline: auto; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 14px; }
 .map-ctrl > button {
   border: 1px solid var(--line); background: var(--surface); border-radius: 6px; padding: 6px 12px;
   cursor: pointer; font-size: 13px; white-space: nowrap;
@@ -82,7 +82,7 @@
   background: color-mix(in srgb, var(--c) 55%, var(--surface));
 }
 .map-dots button.on { background: var(--c); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 30%, transparent); }
-.map-src { font-size: 12px; color: var(--muted); margin: 10px 0 0; }
+.map-src { font-size: 12px; color: var(--muted); margin: 10px auto 0; max-width: 1212px; }
 .map-src a { color: inherit; }
 
 @media (max-width: 900px) {

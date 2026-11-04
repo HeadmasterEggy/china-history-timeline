@@ -8,10 +8,13 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;900&display=swap">
+  <!-- 网络字体异步加载：Google Fonts 在部分地区访问缓慢或受阻，不能阻塞页面渲染；加载前使用系统字体 -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;900&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;900&display=swap"></noscript>
 
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/sidebar.css">
   <link rel="stylesheet" href="css/timeline.css">
   <link rel="stylesheet" href="css/detail.css">
   <link rel="stylesheet" href="css/map.css">
@@ -20,7 +23,13 @@
   <link rel="stylesheet" href="css/list.css">
 </head>
 <body>
-<div class="wrap">
+<div class="layout">
+
+<!-- 左侧边栏：历代政权导航 -->
+<aside class="sidebar" id="sidebar" aria-label="历代政权"></aside>
+<button class="sb-toggle" id="sb-toggle" aria-label="打开朝代列表">☰ 朝代</button>
+
+<main class="wrap">
 
   <!-- 卷首 -->
   <header class="top">
@@ -102,20 +111,21 @@
   </section>
 
   <!-- 历史人物 -->
-  <section class="people-sec">
+  <section class="people-sec" id="people-sec">
     <h2>历史人物</h2>
     <p>按时期排列。点击姓名查看简介，并跳转到所属朝代。</p>
     <div id="people"></div>
   </section>
 
   <!-- 历代一览 -->
-  <section class="list">
+  <section class="list" id="list-sec">
     <h2>历代一览</h2>
     <p>色条长度代表政权存续年数。点击任一行在上方查看详情。</p>
     <div id="list"></div>
   </section>
 
   <footer>年代采用通行说法，上古年代依据"夏商周断代工程"等研究，均为约数；部分政权起止年存在不同观点。</footer>
+</main>
 </div>
 
 <!-- 事件详情弹窗 -->

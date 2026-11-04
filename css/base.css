@@ -3,7 +3,7 @@
 html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.7 var(--f-sans);
   -webkit-font-smoothing:antialiased}
-.wrap{margin:0;
+.wrap{max-width:1440px;margin:0 auto;
   padding-left:max(clamp(16px,2.5vw,40px),env(safe-area-inset-left,0px));padding-right:max(clamp(16px,2.5vw,40px),env(safe-area-inset-right,0px))}
 h1,h2,h3{text-wrap:balance;margin:0}
 button{font:inherit;color:inherit}
