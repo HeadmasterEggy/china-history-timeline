@@ -5,6 +5,7 @@
 import { model } from '../js/core/model.js';
 
 const filter = process.argv[2];
+// 指向其他事件的别名也算已覆盖
 let total = 0;
 let done = 0;
 for (const era of model.eras) {

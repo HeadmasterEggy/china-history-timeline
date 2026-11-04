@@ -45,7 +45,10 @@ for (const d of ordered) {
     const n = (perYear.get(year) ?? 0) + 1;
     perYear.set(year, n);
     const base = `${d.id}-${year < 0 ? `b${-year}` : year}`;
-    const ev = { id: n === 1 ? base : `${base}-${n}`, year, text, dynasty: d, detail: n === 1 ? EVENT_DETAILS[base] : undefined };
+    const id = n === 1 ? base : `${base}-${n}`;
+    // 同一件事在两个政权的大事记里都有时，可用字符串指向另一条详情
+    const raw = EVENT_DETAILS[id];
+    const ev = { id, year, text, dynasty: d, detail: typeof raw === 'string' ? EVENT_DETAILS[raw] : raw };
     eventById.set(ev.id, ev);
     return ev;
   });
