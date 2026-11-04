@@ -60,7 +60,7 @@ data/
   details.js            补充资料（君主、成就、衰亡原因、更多大事）
   idioms.js             出自各朝的成语典故
   people.js             人物简介（生卒、身份、简介）
-  events.js             重大事件详情（背景、经过、结果、影响、延伸阅读）
+  events/               重大事件详情，按时期分文件（背景、经过、结果、影响、延伸阅读）
   sources.js            各朝主要史书与百科词条名
   milestones.js         时间轴顶部的大事件
   unity.js              分合色带
@@ -68,6 +68,7 @@ data/
 scripts/
   build_map.py          生成地图数据
   check-data.js         数据自检
+  coverage.js           事件详情覆盖情况（npm run coverage -- 先秦）
 ```
 
 ## 修改数据

@@ -7,7 +7,7 @@ import { PINS } from '../../data/milestones.js';
 import { UNITY, UNITY_TYPES } from '../../data/unity.js';
 import { IDIOMS } from '../../data/idioms.js';
 import { PEOPLE, ALIASES } from '../../data/people.js';
-import { EVENT_DETAILS } from '../../data/events.js';
+import { EVENT_DETAILS } from '../../data/events/index.js';
 import { DYNASTY_SOURCES } from '../../data/sources.js';
 import { drawStart } from './format.js';
 

@@ -6,6 +6,7 @@
   "scripts": {
     "serve": "python3 -m http.server 8080",
     "check": "node scripts/check-data.js",
-    "build:map": "python3 -I scripts/build_map.py"
+    "build:map": "python3 -I scripts/build_map.py",
+    "coverage": "node scripts/coverage.js"
   }
 }
