@@ -38,7 +38,7 @@ function infoColumn(d, model) {
       <dl class="kv">
         <dt>建立者</dt><dd>${d.f}</dd>
         <dt>都城</dt><dd>${d.c}</dd>
-        ${rulers ? `<dt>君主</dt><dd>${rulers}</dd>` : ''}
+        ${rulers ? `<dt>${d.open ? '历任国家主席' : '君主'}</dt><dd>${rulers}</dd>` : ''}
         <dt>同期政权</dt><dd>${concurrent}</dd>
         <dt>代表人物</dt><dd><div class="people">${list(d.p, (x) => personChip(x, model))}</div></dd>
       </dl>

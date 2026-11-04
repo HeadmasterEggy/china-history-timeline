@@ -17,10 +17,10 @@ import os
 import sys
 
 # ---------- 投影与输出范围 ----------
-LON0, LON1 = 70.0, 142.0
-LAT0, LAT1 = 14.0, 56.0
+LON0, LON1 = 73.0, 136.0
+LAT0, LAT1 = 16.0, 54.0
 WIDTH = 1000.0
-SIMPLIFY_PX = 0.9      # 简化容差（像素）
+SIMPLIFY_PX = 1.4      # 简化容差（像素）
 MIN_RING_PX2 = 6.0     # 小于该面积的碎片丢弃
 LABEL_MIN_PX2 = 900.0  # 面积足够大才显示标签
 LABEL_MIN_REGIME_PX2 = 120.0  # 本站收录政权的标签阈值更低（如荆南）
@@ -109,6 +109,17 @@ QING_1640 = [(104, 56), (140, 56), (140, 38.0), (121.0, 38.0), (121.9, 40.8), (1
 MONGOL_W_1640 = [(85, 56), (104, 56), (104, 38.0), (102.6, 37.9), (98.2, 39.8), (95, 40.5), (85, 41)]
 
 
+# 秦（约前 210 年）：由前 200 年的汉朝范围补全。秦南平百越设南海、桂林、象郡，并设闽中郡。
+HAINAN = [(108.4, 17.8), (108.4, 20.25), (111.3, 20.25), (111.3, 17.8)]  # 海南岛：前 110 年才设珠崖、儋耳郡
+LINGNAN_210 = [(104, 20.5), (104, 26.2), (111.5, 26.3), (116.5, 25.5), (117.5, 23), (110, 19.5)]
+
+# 安史之乱（756 年）：由 700 年的唐朝范围切分出叛军（大燕）控制的河北、河南与两京一带。
+YAN_756 = [(107.8, 33.9), (107.8, 35.0), (110.5, 35.0), (112.5, 35.1), (113.6, 35.3), (113.8, 37.0),
+           (114.2, 38.5), (114.8, 39.8), (115.2, 40.8), (117.5, 41.5), (120.5, 41.8), (121.5, 41.0),
+           (121.5, 38.8), (118.0, 38.5), (117.0, 37.0), (116.5, 35.5), (116.0, 34.5), (115.2, 34.0),
+           (113.5, 33.6), (111.0, 33.8)]
+
+
 # ---------- 帧配置 ----------
 # role: main = 中原王朝；para = 并存政权（本站收录）；adm = 王朝管辖或羁縻区域；other = 周边政权
 # 每项：数据集名称 -> (role, 本站朝代 id 或 None, 中文标签[, 标签位置 (经度, 纬度)])
@@ -135,10 +146,18 @@ FRAMES = [
      "desc": "秦国吞并巴蜀，实力跃居七国之首，统一之势已成。",
      "map": {"Qin": ("main", "zhanguo", "秦"), "Zhou states": ("main", "zhanguo", "关东六国"),
              "Yue": ("other", None, "越")}},
+    {"src": "bc200", "year": -210, "title": "秦统一", "focus": "qin",
+     "desc": "秦灭六国后南平百越，设南海、桂林、象郡和闽中郡；北逐匈奴收复河套，连接各国长城，形成统一的多民族国家。",
+     "map": {"Han Empire": ("main", "qin", "秦"), "Xiongnu": ("other", None, "匈奴"),
+             "Yuezhi": ("other", None, "月氏")},
+     "merge": [("Nan-Yue", "Han Empire"), ("Min-Yue", "Han Empire")],
+     "move": [("Thai", "Han Empire", LINGNAN_210)],
+     "split": [("Han Empire", "海南岛", HAINAN)]},
     {"src": "bc200", "year": -200, "title": "西汉初年", "focus": "xihan",
      "desc": "汉朝初建，北有匈奴冒顿单于强盛，南有南越、闽越割据。",
      "map": {"Han Empire": ("main", "xihan", "西汉"), "Nan-Yue": ("other", None, "南越"),
-             "Min-Yue": ("other", None, "闽越")}},
+             "Min-Yue": ("other", None, "闽越"), "海南岛": ("other", None, "")},
+     "split": [("Han Empire", "海南岛", HAINAN)]},
     {"src": "bc100", "year": -100, "title": "汉武帝时期", "focus": "xihan",
      "desc": "汉武帝北击匈奴，开河西四郡，平定南越、闽越，疆域大为扩展。",
      "map": {"Han Empire": ("main", "xihan", "西汉")}},
@@ -183,6 +202,13 @@ FRAMES = [
      "desc": "唐朝击败东、西突厥，设安西、北庭等都护府，青藏高原上吐蕃兴起。",
      "map": {"Sui Empire": ("main", "tang", "唐"), "Tufan Empire": ("para", "tubo", "吐蕃"),
              "Nan-Zhao": ("other", None, "六诏"), "Hainan": ("main", "tang", "")}},
+    {"src": "700", "year": 756, "title": "安史之乱", "focus": "yan",
+     "desc": "755 年安禄山起兵，次年在洛阳称帝，攻破潼关占领长安；唐玄宗逃往蜀中，太子李亨在灵武即位，借回纥兵平叛。",
+     "map": {"Sui Empire": ("main", "tang", "唐"), "大燕": ("para", "yan", "大燕（安史叛军）"),
+             "Tufan Empire": ("para", "tubo", "吐蕃"), "Nan-Zhao": ("para", "nanzhao", "南诏"),
+             "Göktürks": ("other", None, ""), "Uyghurs": ("other", None, "回纥"), "Koguryo": ("other", None, ""),
+             "Paekche": ("other", None, ""), "Hainan": ("main", "tang", "")},
+     "split": [("Sui Empire", "大燕", YAN_756)]},
     {"src": "800", "year": 800, "title": "唐中后期", "focus": "tang",
      "desc": "安史之乱后唐朝退出西域，吐蕃占据河西陇右，回鹘称雄漠北。",
      "map": {"Tang Empire": ("main", "tang", "唐"), "Tibetan Empire": ("para", "tubo", "吐蕃"),
@@ -266,6 +292,7 @@ CAPITALS = {
     -500: [("洛邑", 112.45, 34.62)],
     -400: [("洛邑", 112.45, 34.62), ("临淄", 118.35, 36.85), ("郢", 112.2, 30.4), ("安邑", 111.1, 35.1)],
     -300: [("咸阳", 108.7, 34.35), ("临淄", 118.35, 36.85), ("郢", 112.2, 30.4), ("邯郸", 114.5, 36.6), ("大梁", 114.35, 34.8), ("新郑", 113.7, 34.4), ("蓟", 116.35, 39.9)],
+    -210: [("咸阳", 108.7, 34.35)],
     -200: [("长安", 108.88, 34.3), ("番禺", 113.26, 23.13)],
     -100: [("长安", 108.88, 34.3)],
     -1: [("长安", 108.88, 34.3)],
@@ -277,6 +304,7 @@ CAPITALS = {
     565: [("建康", 118.78, 32.05), ("邺城", 114.37, 36.33), ("长安", 108.94, 34.27), ("江陵", 112.2, 30.35)],
     600: [("大兴", 108.94, 34.27)],
     700: [("长安", 108.94, 34.27), ("神都洛阳", 112.45, 34.62), ("逻些", 91.13, 29.65)],
+    756: [("灵武（肃宗即位）", 106.33, 38.1), ("洛阳（大燕）", 112.45, 34.62), ("成都（玄宗入蜀）", 104.06, 30.67), ("逻些", 91.13, 29.65)],
     800: [("长安", 108.94, 34.27), ("逻些", 91.13, 29.65), ("羊苴咩城", 100.16, 25.69), ("上京龙泉府", 129.1, 43.97)],
     900: [("长安", 108.94, 34.27), ("羊苴咩城", 100.16, 25.69), ("上京龙泉府", 129.1, 43.97)],
     943: [("东京开封", 114.35, 34.79), ("辽上京", 119.39, 43.97), ("金陵", 118.78, 32.05), ("杭州", 120.17, 30.25), ("福州", 119.3, 26.08), ("长沙", 112.98, 28.2), ("兴王府", 113.26, 23.13), ("成都", 104.06, 30.67), ("江陵", 112.2, 30.35), ("大理", 100.16, 25.69)],
@@ -357,6 +385,11 @@ def ring_centroid(pts):
 
 
 def polygons(geom):
+    """返回多边形列表；空几何或几何集合中的非面要素被忽略。"""
+    if geom["type"] == "GeometryCollection":
+        return [p for g in geom["geometries"] for p in polygons(g)]
+    if not geom.get("coordinates"):
+        return []
     if geom["type"] == "Polygon":
         return [geom["coordinates"]]
     if geom["type"] == "MultiPolygon":
@@ -400,7 +433,10 @@ def apply_splits(features, splits):
     for src, name, region in splits:
         a = shape(by_name[src]["geometry"])
         region = Polygon(region)
-        features.append({"properties": {"NAME": name}, "geometry": mapping(a.intersection(region))})
+        piece = a.intersection(region)
+        if piece.is_empty:
+            continue
+        features.append({"properties": {"NAME": name}, "geometry": mapping(piece)})
         by_name[src]["geometry"] = mapping(a.difference(region))
 
 
@@ -413,6 +449,18 @@ def apply_merges(features, merges):
         merged = shape(by_name[dst]["geometry"]).union(shape(by_name[src]["geometry"])).buffer(0)
         by_name[dst]["geometry"] = mapping(merged)
         by_name[src]["geometry"] = None
+
+
+def apply_moves(features, moves):
+    """把 src 位于 region 内的部分划给 dst。"""
+    from shapely.geometry import Polygon, mapping, shape
+
+    by_name = {ft["properties"].get("NAME"): ft for ft in features if ft.get("geometry")}
+    for src, dst, region in moves:
+        region = Polygon(region)
+        a, b = shape(by_name[src]["geometry"]), shape(by_name[dst]["geometry"])
+        by_name[src]["geometry"] = mapping(a.difference(region))
+        by_name[dst]["geometry"] = mapping(b.union(a.intersection(region)).buffer(0))
 
 
 def apply_fixes(features, fixes):
@@ -436,6 +484,8 @@ def build(src_dir):
             apply_merges(data["features"], cfg["merge"])
         if cfg.get("fix"):
             apply_fixes(data["features"], cfg["fix"])
+        if cfg.get("move"):
+            apply_moves(data["features"], cfg["move"])
         if cfg.get("split"):
             apply_splits(data["features"], cfg["split"])
         if cfg.get("merge_after"):

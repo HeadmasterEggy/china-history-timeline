@@ -5,12 +5,12 @@
 .map-sec h2 { font: 900 26px/1.2 var(--f-serif); }
 .map-sec > header p { color: var(--muted); margin: 0; }
 
-.map-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 340px); gap: 20px 32px; align-items: start; }
+.map-body { display: grid; grid-template-columns: minmax(0, 820px) minmax(260px, 360px); gap: 20px 32px; align-items: start; }
 .map-stage {
   position: relative; border: 1px solid var(--line); border-radius: 8px; overflow: hidden;
   background: var(--map-sea);
 }
-.map-stage svg { display: block; width: 100%; height: auto; aspect-ratio: 1000 / 747; }
+.map-stage svg { display: block; width: 100%; height: auto; max-height: 64vh; }
 .map-sec.loading .map-stage::after {
   content: "地图加载中…"; position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted);
 }
@@ -68,7 +68,7 @@
 }
 
 /* 播放控制 */
-.map-ctrl { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 14px; }
+.map-ctrl { max-width: 1212px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 14px; }
 .map-ctrl > button {
   border: 1px solid var(--line); background: var(--surface); border-radius: 6px; padding: 6px 12px;
   cursor: pointer; font-size: 13px; white-space: nowrap;
