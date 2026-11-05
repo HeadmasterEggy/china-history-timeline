@@ -21,7 +21,7 @@ for (const era of model.eras) {
 console.log(`合计      ${done} / ${total}（${Math.round((done / total) * 100)}%）`);
 
 if (filter === '朝代') {
-  console.log('\n朝代        年数  大事 分期 专题 成语 人物');
+  console.log('\n朝代        年数  大事 分期 专题 成语 人物 每百年大事');
   for (const d of model.ordered)
-    console.log([d.n.padEnd(8, '　'), String(d.e - d.s).padStart(4), ...[d.events.length, d.phases?.length ?? 0, d.sections?.length ?? 0, d.idioms?.length ?? 0, d.p.length].map((n) => String(n).padStart(4))].join(' '));
+    console.log([d.n.padEnd(8, '　'), String(d.e - d.s).padStart(4), ...[d.events.length, d.phases?.length ?? 0, d.sections?.length ?? 0, d.idioms?.length ?? 0, d.p.length].map((n) => String(n).padStart(4)), (d.e - d.s >= 50 ? ((d.events.length * 100) / (d.e - d.s)).toFixed(1) : '').padStart(6)].join(' '));
 }
