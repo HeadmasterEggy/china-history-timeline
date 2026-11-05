@@ -1,13 +1,17 @@
 /* 左侧边栏与整体布局 */
 
-.layout { display: grid; grid-template-columns: 264px minmax(0, 1fr); min-height: 100%; }
+.layout {
+  display: grid; grid-template-columns: 264px minmax(0, 1fr); min-height: 100%;
+  /* 宽屏下侧边栏与正文整体居中，侧边栏紧贴正文而不是停在屏幕最左边 */
+  max-width: calc(264px + 1440px); margin: 0 auto;
+}
 /* 主内容含超宽的时间轴；居中用的 auto 外边距会让网格项按内容定宽，因此显式设为 100% 并允许收缩 */
 .layout > main { min-width: 0; width: 100%; box-sizing: border-box; }
 
 .sidebar {
   position: sticky; top: 0; height: 100vh; height: 100dvh;
   display: flex; flex-direction: column; overflow: hidden;
-  background: var(--surface); border-right: 1px solid var(--line);
+  background: var(--surface); border-right: 1px solid var(--line); border-left: 1px solid var(--line);
   padding-top: env(safe-area-inset-top, 0px);
 }
 .sb-head { padding: 18px 16px 12px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
